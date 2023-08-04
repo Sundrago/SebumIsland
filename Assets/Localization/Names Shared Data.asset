@@ -1,0 +1,85 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: Names Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: Names
+  m_TableCollectionNameGuidString: 92cd4a6713e9a4767a721bcb2e384cde
+  m_Entries:
+  - m_Id: 17266892800
+    m_Key: title_oilfall0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18221037886889984
+    m_Key: descr_oilfall0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18221101480927232
+    m_Key: title_oilfall1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 18221114617487360
+    m_Key: descr_oilfall1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20965319316070400
+    m_Key: title_farm0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20965347896057856
+    m_Key: descr_farm0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20965389566468096
+    m_Key: title_tree0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20965403462197248
+    m_Key: descr_tree0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20965476166262784
+    m_Key: title_storm0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 20965680697303040
+    m_Key: descr_storm0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22587447748583424
+    m_Key: title_farm1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22587491969130496
+    m_Key: descr_farm1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22587522855985152
+    m_Key: title_farm2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 22587539473817600
+    m_Key: descr_farm2
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1786431706487062552
+  references:
+    version: 2
+    RefIds:
+    - rid: 1786431706487062552
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables,
+        asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1667896639238

@@ -1,0 +1,125 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: pigi Shared Data
+  m_EditorClassIdentifier: 
+  m_TableCollectionName: pigi
+  m_TableCollectionNameGuidString: 65b8e44b220324c8ebe8e93ec19c0275
+  m_Entries:
+  - m_Id: 10543423488
+    m_Key: title_pigi_farm0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 175555731456
+    m_Key: descr_pigi_farm0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 187597578240
+    m_Key: title_pigi_farm1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 351028633600
+    m_Key: descr_pigi_farm1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1354520059904
+    m_Key: title_pigi_farm2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1358471094272
+    m_Key: descr_pigi_farm2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71950091659763712
+    m_Key: title_pigi_tree0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71950099285008384
+    m_Key: descr_pigi_tree0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71950229098717184
+    m_Key: title_pigi_tree1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71950234136076288
+    m_Key: descr_pigi_tree1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71950401144872960
+    m_Key: title_pigi_tree2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71950405825716224
+    m_Key: descr_pigi_tree2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71950618057498624
+    m_Key: title_pigi_tree3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71950624344760320
+    m_Key: descr_pigi_tree3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71952127176466432
+    m_Key: title_pigi_castle0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71952130536103936
+    m_Key: descr_pigi_castle0
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71952265236176896
+    m_Key: title_pigi_castle1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71952270902681600
+    m_Key: descr_pigi_castle1
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71952437835980800
+    m_Key: title_pigi_castle2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71952442869145600
+    m_Key: descr_pigi_castle2
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71952693470420992
+    m_Key: title_pigi_castle3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71952699069816832
+    m_Key: descr_pigi_castle3
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71952839436394496
+    m_Key: title_pigi_castle4
+    m_Metadata:
+      m_Items: []
+  - m_Id: 71952844616359936
+    m_Key: descr_pigi_castle4
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 7662419785768239122
+  references:
+    version: 2
+    RefIds:
+    - rid: 7662419785768239122
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables,
+        asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1673282008091
