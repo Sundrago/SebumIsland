@@ -128,12 +128,9 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
 
     public void StartTimer()
     {
-        print(landmark.name);
-        print(landmark.growTime);
         growTime = landmark.growTime * Random.Range(0.6f, 1.5f);
         sellPrice = landmark.sellPrice;
 
-        print(sellPrice.GetString());
         currentStatus = 0;
         PlayAnim(currentStatus);
         startTime = System.DateTime.Now;
@@ -269,7 +266,6 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
         newPigiCtrl.GotPigi(ID);
         if (!showCoin) return;
         coin2d.GetComponent<CoinAnimation2D>().Addcoin(3, Camera.main.WorldToScreenPoint(gameObject.transform.position));
-        print(landmark.sellPrice.GetString());
         Camera.main.GetComponent<MoneyUI>().AddMoney(landmark.sellPrice);
         harvested = false;
     }

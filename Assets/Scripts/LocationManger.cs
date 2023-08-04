@@ -563,7 +563,7 @@ public class LocationManger : MonoBehaviour
         UpdateLocations();
     }
 
-    private void UpdateLocations()
+    public void UpdateLocations()
     {
         foreach (Location location in locations)
         {
@@ -621,8 +621,6 @@ public class LocationManger : MonoBehaviour
         allocatedObj.Remove(landmark);
 
         landmark.GetComponent<Landmark>().DestroyLandmark();
-        Camera.main.GetComponent<ParamsData>().landmarks.Remove(landmark);
-
         newLandmark.transform.position = landmark.transform.position;
         newLandmark.GetComponent<LocationObject>().ReadCSV();
         newLandmark.GetComponent<LocationObject>().copyN = landmark.GetComponent<LocationObject>().copyN;
@@ -635,7 +633,6 @@ public class LocationManger : MonoBehaviour
         Destroy(landmark);
 
         allocatedObj.Add(newLandmark);
-        Camera.main.GetComponent<ParamsData>().landmarks.Add(newLandmark);
         myAudio.PlaySFX(3);
 
         return newLandmark;
@@ -661,7 +658,43 @@ public class LocationManger : MonoBehaviour
         {
             if (obj.GetComponent<LocationObject>().modelID_family == id) count += 1;
         }
-
+        
         return count;
+    }
+
+    public void ResetAllocatedObj()
+    {
+        for(int i = allocatedObj.Count-1; i>=0; i--)
+        {
+            Destroy(allocatedObj[i]);
+            allocatedObj.RemoveAt(i);
+        }
+    }
+
+    public void AddAllocatedObj(LocationObjData objData)
+    {
+        GameObject originalObj = FindAvailableObj(objData.modelId);
+
+        if (originalObj == null)
+        {
+            print("[LocationManager : BuildNewLandmark] Can't find modelId : " + objData.modelId);
+            return;
+        }
+
+        GameObject newObj = Instantiate(originalObj, gameObject.transform);
+        LocationObject locationObj = newObj.GetComponent<LocationObject>();
+
+        locationObj.landMarkID = objData.modelId;
+        locationObj.copyN = objData.copyN;
+        locationObj.x = objData.x;
+        locationObj.y = objData.y;
+        locationObj.ReadCSV(objData.buildTime);
+
+        newObj.transform.position = Vector3.Lerp(GetLocation(objData.x, objData.y).GetCnerterPos(), GetLocation(objData.x + locationObj.width - 1, objData.y + locationObj.height - 1).GetCnerterPos(), 0.5f);
+
+        newObj.SetActive(true);
+        newObj.GetComponent<Landmark>().enabled = true;
+        newObj.GetComponent<Landmark>().Start();
+        allocatedObj.Add(newObj);
     }
 }

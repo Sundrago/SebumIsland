@@ -4,5 +4,5 @@ using UnityEngine;
 
 public class ParamsData : MonoBehaviour
 {
-    public List<GameObject> landmarks = new List<GameObject>();
+    // public List<GameObject> landmarks = new List<GameObject>();
 }

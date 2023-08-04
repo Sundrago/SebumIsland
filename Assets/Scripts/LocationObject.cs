@@ -44,13 +44,15 @@ public class LocationObject : MonoBehaviour
     public Price levelUpPrice;
     public int levelUpTime;
     public string nextLevelId;
-
     public int upgradeStatus = 0;
-
 
     private bool started = false;
 
-    public void ReadCSV()
+    const string format = "yyyy/MM/dd HH:mm:ss";
+    System.IFormatProvider provider;
+    public System.DateTime buildCompleteTime = System.DateTime.Now;
+
+    public void ReadCSV(string buildCompleteTime_str = null)
     {
         if(started) return;
         started = true;
@@ -71,6 +73,16 @@ public class LocationObject : MonoBehaviour
         buildPrice = data.buildPrice;
 
         GetLevelUpInfo();
+
+        //setup build time
+        if (buildCompleteTime_str == null)
+        {
+            buildCompleteTime = System.DateTime.Now.AddSeconds(buildTime);
+        }
+        else
+        {
+            buildCompleteTime = System.DateTime.ParseExact(buildCompleteTime_str, format, provider);
+        }
     }
 
     private void GetLevelUpInfo()
@@ -99,6 +111,11 @@ public class LocationObject : MonoBehaviour
             return levelUpPrice;
         }
         return(data.data[upgradeStatus].price);
+    }
+
+    public string GetBuildTime()
+    {
+        return buildCompleteTime.ToString(format);
     }
 }
 

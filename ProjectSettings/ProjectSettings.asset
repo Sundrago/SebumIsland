@@ -134,7 +134,7 @@ PlayerSettings:
     16:10: 1
     16:9: 1
     Others: 1
-  bundleVersion: 1.0.30
+  bundleVersion: 1.0.31
   preloadedAssets:
   - {fileID: 11400000, guid: 35d0fac60b71c4ff089416029945f864, type: 2}
   metroInputSource: 0
@@ -803,8 +803,18 @@ PlayerSettings:
   webGLThreadsSupport: 0
   webGLDecompressionFallback: 0
   scriptingDefineSymbols:
-    Android: 
-    iPhone: ODIN_INSPECTOR;ODIN_INSPECTOR_3;ODIN_INSPECTOR_3_1
+    Android: UNITY_VISUAL_SCRIPTING
+    CloudRendering: UNITY_VISUAL_SCRIPTING
+    EmbeddedLinux: UNITY_VISUAL_SCRIPTING
+    Nintendo Switch: UNITY_VISUAL_SCRIPTING
+    PS4: UNITY_VISUAL_SCRIPTING
+    Server: UNITY_VISUAL_SCRIPTING
+    Standalone: UNITY_VISUAL_SCRIPTING
+    WebGL: UNITY_VISUAL_SCRIPTING
+    Windows Store Apps: UNITY_VISUAL_SCRIPTING
+    XboxOne: UNITY_VISUAL_SCRIPTING
+    iPhone: ODIN_INSPECTOR;ODIN_INSPECTOR_3;ODIN_INSPECTOR_3_1;UNITY_VISUAL_SCRIPTING
+    tvOS: UNITY_VISUAL_SCRIPTING
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:

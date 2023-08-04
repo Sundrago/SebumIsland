@@ -87,7 +87,7 @@ public class MoneyUI : MonoBehaviour
     void Start()
     {
         Application.targetFrameRate = 60;
-        LoadData();   
+        UpdateUI();
     }
 
     // public void Update()
@@ -110,6 +110,8 @@ public class MoneyUI : MonoBehaviour
                     if (i == 0) moneyText.text = GetMyBalance().GetString();
                 }
             }
+
+        if (balcance.Count == 0) moneyText.text = "0a";
     }
 
     string ConvertIntToCode(int idx)
@@ -184,7 +186,7 @@ public class MoneyUI : MonoBehaviour
         }
     }
 
-    private Price GetMyBalance()
+    public Price GetMyBalance()
     {
         for (int i = balcance.Count - 1; i >= 0; i--)
         {
@@ -208,32 +210,9 @@ public class MoneyUI : MonoBehaviour
         return false;
     }
 
-    private void LoadData()
+    public void ResetMoney()
     {
-        // if(PlayerPrefs.HasKey("myBalanceAmount"))
-        // {
-        //     Price myBalance = new Price(PlayerPrefs.GetInt("myBalanceAmount"), PlayerPrefs.GetString("myBalanceChar"));
-        //     AddMoney(myBalance);
-        //     print("data loaded - balance : " + myBalance.GetString());
-        // } else 
-        AddMoney(new Price(5000, "a"));
-    }
-
-    private void SaveData()
-    {
-        Price myBalance = GetMyBalance();
-        PlayerPrefs.SetInt("myBalanceAmount", myBalance.amount);
-        PlayerPrefs.SetString("myBalanceChar", myBalance.charCode);
-        PlayerPrefs.Save();
-    }
-
-    private void OnApplicationPause(bool pause)
-    {
-        //if (pause) SaveData();
-    }
-
-    private void OnApplicationQuit()
-    {
-        //SaveData();
+        balcance = new List<Price>();
+        UpdateUI();
     }
 }

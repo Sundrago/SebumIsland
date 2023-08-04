@@ -68,6 +68,11 @@ public class Landmark : MonoBehaviour
 
     public ParamsData paramsData;
     private bool started = false;
+
+    public bool isBuilding = false;
+
+    System.DateTime buildCompleteTime;
+
     // Start is called before the first frame update
     public void Start()
     {
@@ -88,28 +93,26 @@ public class Landmark : MonoBehaviour
         defaultPrice = locationObject.data.defaultPrice;
         pigiCount = locationObject.data.pigiAmout;
         maxUprade = locationObject.data.maxUpdateIdx;
+        buildCompleteTime = locationObject.buildCompleteTime;
 
         //Load Saved Data.
         // LoadData();
         UpdateData();
 
         //PlaceSelector.SetLandmark(gameObject, placeID);
-        paramsData.landmarks.Add(gameObject);
         pigi.SetActive(false);
 
         //GetLevelUPInfo
-        // GetComponent<LocationObject>().GetLevelUpInfo();
-        SetupPigi();
+        if(buildCompleteTime > System.DateTime.Now)
+        {
+            isBuilding = true;
+            guideText.gameObject.SetActive(true);
+        } else
+        {
+            isBuilding = false;
+            SetupPigi();
+        }
     }
-
-    // Update is called once per frame
-    // void Update()
-    // {
-    //     if (grownPigis.Count == pigis.Count | grownPigis.Count == 0)
-    //     {
-    //         HarvestAll();
-    //     }
-    // }
 
     public void CreatePigi(int amount)
     {
@@ -210,7 +213,22 @@ public class Landmark : MonoBehaviour
         if (grownPigis.Count == pigis.Count) harvestAllCtrl.RemoveReadyLandmark(gameObject);
     }
 
+    private void Update()
+    {
+        if (!isBuilding) return;
 
+        System.TimeSpan timeSpan;
+        timeSpan = buildCompleteTime - System.DateTime.Now;
+
+        guideText.text = "건설중! " + Mathf.FloorToInt((float)timeSpan.TotalSeconds) + "초 남음";
+
+        if(timeSpan.TotalSeconds <= 0)
+        {
+            isBuilding = false;
+            guideText.gameObject.SetActive(false);
+            SetupPigi();
+        }
+    }
     // void SaveData()
     // {
     //     //print("data saved");
@@ -240,6 +258,6 @@ public class Landmark : MonoBehaviour
     //     PlayerPrefs.DeleteAll();
     // }
 
-    
+
 
 }
