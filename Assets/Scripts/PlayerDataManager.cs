@@ -62,6 +62,12 @@ public class PlayerDataManager : MonoBehaviour
 	[Button]
 	public void LoadData()
     {
+		if (!ES3.KeyExists("locationObjData"))
+        {
+			ResetData();
+			return;
+        }
+
 		//location data
 		locationObjDatas = new List<LocationObjData>();
 		locationObjDatas = ES3.Load<List<LocationObjData>>("locationObjData");
@@ -99,6 +105,7 @@ public class PlayerDataManager : MonoBehaviour
 		//money
 		PlayerPrefs.DeleteAll();
 		money.ResetMoney();
+		money.AddMoney(new Price(5, "a"));
 	}
 
 

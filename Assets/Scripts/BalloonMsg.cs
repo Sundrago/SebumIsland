@@ -7,10 +7,10 @@ using DG.Tweening;
 
 public class BalloonMsg : MonoBehaviour
 {
-    public GameObject balloon_ui;
-    public TextMeshProUGUI text_ui;
-    public Image bg_ui;
-    public bool shown = false;
+    [SerializeField] GameObject balloon_ui;
+    [SerializeField] TextMeshProUGUI text_ui;
+    [SerializeField] Image bg_ui;
+    private bool shown = false;
 
     public void Show(string msg)
     {

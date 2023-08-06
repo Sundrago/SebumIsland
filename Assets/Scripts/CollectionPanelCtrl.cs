@@ -6,6 +6,7 @@ using DG.Tweening;
 public class CollectionPanelCtrl : MonoBehaviour
 {
     [SerializeField] Collection_Pigi collection_pigi;
+
     public void Show() {
         if(!collection_pigi.initialized) collection_pigi.InitializePigiCollection();
         gameObject.transform.localPosition = Vector3.zero;

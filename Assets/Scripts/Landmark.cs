@@ -3,40 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-//public class LandMarkData
-//{
-//    string ID;
-//    //position
-//    string type;
-//    int[] upgradeStatus;
-//    int maxCount;
-//    float maxTime;
-//    float bunusRate;
-//    float bunusMultiplier;
-
-//    public void LoadInfo(string myID)
-//    {
-//        ID = myID;
-//        type = PlayerPrefs.GetString(myID + "_TYPE");
-//        upgradeStatus = new int[4];
-//        upgradeStatus[0] = PlayerPrefs.GetInt(myID + "_UPGRADE0");
-//        upgradeStatus[1] = PlayerPrefs.GetInt(myID + "_UPGRADE1");
-//        upgradeStatus[2] = PlayerPrefs.GetInt(myID + "_UPGRADE2");
-//        upgradeStatus[3] = PlayerPrefs.GetInt(myID + "_UPGRADE3");
-//        upgradeStatus[4] = PlayerPrefs.GetInt(myID + "_UPGRADE4");
-//    }
-
-//    public void SaveInfo()
-//    {
-//        PlayerPrefs.SetString(ID + "_TYPE", type);
-//        PlayerPrefs.SetInt(ID + "_UPGRADE0", upgradeStatus[0]);
-//        PlayerPrefs.SetInt(ID + "_UPGRADE1", upgradeStatus[1]);
-//        PlayerPrefs.SetInt(ID + "_UPGRADE2", upgradeStatus[2]);
-//        PlayerPrefs.SetInt(ID + "_UPGRADE3", upgradeStatus[3]);
-//        PlayerPrefs.SetInt(ID + "_UPGRADE3", upgradeStatus[4]);
-//    }
-//}
-
 public class Landmark : MonoBehaviour
 {
     public string ID;
@@ -229,35 +195,4 @@ public class Landmark : MonoBehaviour
             SetupPigi();
         }
     }
-    // void SaveData()
-    // {
-    //     //print("data saved");
-    //     //PlayerPrefs.SetInt(ID + "_UPGRADE0", upgradeStatus[0]);
-    //     //PlayerPrefs.SetInt(ID + "_UPGRADE1", upgradeStatus[1]);
-    //     //PlayerPrefs.SetInt(ID + "_UPGRADE2", upgradeStatus[2]);
-    //     //PlayerPrefs.SetInt(ID + "_UPGRADE3", upgradeStatus[3]);
-    //     //PlayerPrefs.SetInt(ID + "_UPGRADE4", upgradeStatus[4]);
-    //     //PlayerPrefs.Save();
-    // }
-
-    // void LoadData()
-    // {
-    //     // print("data loaded : " + ID);
-    // }
-
-    // private void OnApplicationPause(bool pause)
-    // {
-    //     //if(pause) SaveData();
-
-    //     PlayerPrefs.DeleteAll();
-    // }
-
-    // private void OnApplicationQuit()
-    // {
-    //     //SaveData();
-    //     PlayerPrefs.DeleteAll();
-    // }
-
-
-
 }

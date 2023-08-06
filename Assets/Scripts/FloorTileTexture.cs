@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class FloorTileTexture : MonoBehaviour
 {
-    public MeshRenderer a,b,c,d;
-    public GameObject sideA, sideB;
+    [SerializeField] MeshRenderer a,b,c,d;
+    [SerializeField] GameObject sideA, sideB;
 
     public void SetSideMeshTexture(){
         a.material = gameObject.GetComponent<MeshRenderer>().material;

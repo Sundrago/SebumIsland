@@ -7,7 +7,7 @@ using TMPro;
 
 public class BuildBtnSet : MonoBehaviour
 {
-    public Image img;
-    public TextMeshProUGUI title, descr, count, btn_text;
-    public Button buyBtn;
+    [SerializeField] public Image img;
+    [SerializeField] public TextMeshProUGUI title, descr, count, btn_text, buildTime;
+    [SerializeField] public Button buyBtn;
 }

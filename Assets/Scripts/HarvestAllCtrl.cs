@@ -32,10 +32,8 @@ public class HarvestAllCtrl : MonoBehaviour
     private void UpdateBtnInteractable(bool isActive) {
         if(isActive) {
             gameObject.GetComponent<Button>().interactable = true;
-            gameObject.GetComponent<Image>().color = Color.yellow;
         } else {
             gameObject.GetComponent<Button>().interactable = false;
-            gameObject.GetComponent<Image>().color = Color.white;
         }
     }
 

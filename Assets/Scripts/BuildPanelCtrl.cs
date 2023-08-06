@@ -6,16 +6,13 @@ using TMPro;
 
 public class BuildPanelCtrl : MonoBehaviour
 {
-    public UpgradePanel upgradePanel;
-    public PigiInfoPanel pigiInfoPanel;
-    public LocationManger locationManger;
+    [SerializeField] UpgradePanel upgradePanel;
+    [SerializeField] PigiInfoPanel pigiInfoPanel;
+    [SerializeField] LocationManger locationManger;
+    [SerializeField] BuildBtnSet[] buildBtns = new BuildBtnSet[2];
+    [SerializeField] string[] familyIds = new string[2];
 
-    public BuildBtnSet[] buildBtns = new BuildBtnSet[2];
-    public string[] familyIds = new string[2];
-
-    public int[] counts = new int[2];
-
-
+    private int[] counts = new int[3];
     private bool started = false;
 
     private void Start()
@@ -23,9 +20,6 @@ public class BuildPanelCtrl : MonoBehaviour
         if (started) return;
         if (gameObject.activeSelf) gameObject.SetActive(false);
         started = true;
-
-        familyIds[0] = "farm";
-        familyIds[1] = "tree";
     }
 
     public void OpenPanel()
@@ -53,9 +47,6 @@ public class BuildPanelCtrl : MonoBehaviour
                 locationManger.BuildNewLandmark("tree0", 0);
                 break;
             case 2:
-                locationManger.BuildNewLandmark("storm0", 0);
-                break;
-            case 3:
                 locationManger.BuildNewLandmark("oilfall0", 0);
                 break;
             default:
@@ -83,6 +74,7 @@ public class BuildPanelCtrl : MonoBehaviour
             Price price = locationObj.buildPrice;
             int buildTime = locationObj.buildTime;
             buildBtns[i].btn_text.text = price.GetString();
+            buildBtns[i].buildTime.text = buildTime.ToString() + "초";
             print(price.GetString());
         }
     }

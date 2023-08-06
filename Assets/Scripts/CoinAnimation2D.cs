@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class Coin
 {
-    Vector2 startPos, targetPos, endPos;
-    bool onTransition;
-    float startTime, endTime;
     public RectTransform coin;
+
+    private Vector2 startPos, targetPos, endPos;
+    private bool onTransition;
+    private float startTime, endTime;
 
     public void Setup(Vector2 end, RectTransform obj, float velocity, Vector2 starts)
     {
@@ -45,13 +46,12 @@ public class Coin
 
 public class CoinAnimation2D : MonoBehaviour
 {
-    public GameObject coin_ui;
-    public GameObject coin;
-    public GameObject coin_holder;
+    [SerializeField] GameObject coin_ui;
+    [SerializeField] GameObject coin;
+    [SerializeField] GameObject coin_holder;
 
-    List<Coin> coins = new List<Coin>();
+    private List<Coin> coins = new List<Coin>();
 
-    // Update is called once per frame
     void Update()
     {
         for(int i = coins.Count - 1; i>=0; i--)
