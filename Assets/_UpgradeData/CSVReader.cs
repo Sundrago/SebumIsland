@@ -31,7 +31,7 @@ public class UpgradeData
 
 public class CSVReader : MonoBehaviour
 {
-    [[SerializeField] private ] TextAsset CSVData;
+    [SerializeField] TextAsset CSVData;
     public List<UpgradeDataList> importedData = new List<UpgradeDataList>();
 
     public bool started = false;
@@ -69,8 +69,6 @@ public class CSVReader : MonoBehaviour
                 }
 
                 importedData.Add(dataList);
-
-                //if(i==0) Camera.main.GetComponent<MoneyUI>().defaultCharCode = 
            }
     }
 
