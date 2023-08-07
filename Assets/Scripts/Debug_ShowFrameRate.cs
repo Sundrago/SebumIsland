@@ -6,13 +6,7 @@ using UnityEngine.UI;
 public class Debug_ShowFrameRate : MonoBehaviour
 {
     float deltatimeAdd;
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
     void Update()
     {
         float msec, fps;

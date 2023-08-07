@@ -108,6 +108,8 @@ sysinfo.txt
 *.txt
 *.DS_Store
 *.ttf
+*.conf
+*.vsconfig
 
 # Crashlytics generated file
 crashlytics-build.properties

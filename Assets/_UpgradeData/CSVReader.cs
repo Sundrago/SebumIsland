@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class UpgradeDataList
+public struct UpgradeDataList
 {
     public List<UpgradeData> data;
     public string ID;
@@ -31,14 +31,11 @@ public class UpgradeData
 
 public class CSVReader : MonoBehaviour
 {
-    public TextAsset CSVData;
+    [[SerializeField] private ] TextAsset CSVData;
     public List<UpgradeDataList> importedData = new List<UpgradeDataList>();
 
     public bool started = false;
     const int WIDTH = 12;
-
-    ////public UpgradeDataList oilfall = new UpgradeDataList();
-    ////public UpgradeDataList desert = new UpgradeDataList();
 
     public void Start()
     {
