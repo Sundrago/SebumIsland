@@ -6,25 +6,53 @@ using DG.Tweening;
 
 public class HarvestAllCtrl : MonoBehaviour
 {
-    [SerializeField] AudioCtrl audioCtrl;
-
     private List<Landmark> readyLandmarks = new List<Landmark>();
+    [SerializeField] Button EasyHarvestBtn;
+    [SerializeField] Image[] EasyHarvestImg;
+    [SerializeField] InfoDataManager infoDataManager;
+
+    public static HarvestAllCtrl Instance;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
+
+    private void UpdateEasyHarvest()
+    {
+        for(int i = 0; i<EasyHarvestImg.Length; i++)
+        {
+            if (i >= readyLandmarks.Count) EasyHarvestImg[i].sprite = null;
+            else  EasyHarvestImg[i].sprite = infoDataManager.GetLandmarkItemByID(readyLandmarks[i].locationObject.modelID).Img;
+        }
+    }
+
+    public void EasyHarvestClicked()
+    {
+        if (readyLandmarks.Count == 0) return;
+        if(readyLandmarks[0] != null) readyLandmarks[0].HarvestAll();
+        readyLandmarks.RemoveAt(0);
+
+        UpdateEasyHarvest();
+    }
 
     public void AddReadyLandmark(GameObject obj) {
         readyLandmarks.Add(obj.GetComponent<Landmark>());
-        UpdateBtnInteractable(true);
+        UpdateEasyHarvest();
+        //UpdateBtnInteractable(true);
 
-        if (DOTween.IsTweening(gameObject.transform)) DOTween.Kill(gameObject.transform);
-        gameObject.transform.localScale = new Vector3(1f, 1f, 1f);
-        gameObject.transform.DOShakeScale(0.3f);
+        if (DOTween.IsTweening(EasyHarvestBtn.gameObject.transform)) DOTween.Kill(EasyHarvestBtn.gameObject.transform);
+        EasyHarvestBtn.gameObject.transform.localScale = new Vector3(1f, 1f, 1f);
+        EasyHarvestBtn.gameObject.transform.DOShakeScale(0.15f);
+
     }
 
     public void HarvestAllBtnClicked() {
         foreach(Landmark landmark in readyLandmarks) {
             if(landmark != null) landmark.HarvestAll();
         }
-        
-        audioCtrl.PlaySFX(6);
+
+        AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.yeah);
         UpdateBtnInteractable(false);
         readyLandmarks = new List<Landmark>();
     }

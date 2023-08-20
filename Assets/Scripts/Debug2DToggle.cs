@@ -6,16 +6,6 @@ using UnityEngine.UI;
 
 public class Debug2DToggle : MonoBehaviour
 {
-    public void Debug_2d()
-    {
-        var objects = GameObject.FindGameObjectsWithTag("pigi");
-        foreach (var obj in objects)
-        {
-            obj.GetComponent<PigiCtrl>().Debug_toggle2D(gameObject.GetComponent<Toggle>().isOn);
-        }
-        //Debug_toggle2D
-    }
-
     public void Debug_particle()
     {
         var objects = GameObject.FindGameObjectsWithTag("pigi");

@@ -2,29 +2,39 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Sirenix.OdinInspector;
 
 public class Landmark : MonoBehaviour
 {
+    [GUIColor(0.4f, 0.8f, 0.8f, 1f), Required, SerializeField]
     public string ID;
     //public int placeID;
+    [GUIColor(0.4f, 0.8f, 0.8f, 1f), Required, SerializeField]
+    private string pigiID;
 
-    public GameObject pigi;
+    [GUIColor(0.7f, 0.8f, 0.8f, 1f)]
+    public List<Transform> growSpots = new List<Transform>();
+
+    [ReadOnly]
     public List<GameObject> pigis = new List<GameObject>();
+    [ReadOnly]
     public List<GameObject> grownPigis = new List<GameObject>();
-    public List<GameObject> growSpots = new List<GameObject>();
 
+    [GUIColor(0.7f, 0.8f, 0.8f, 1f), Required, SerializeField]
     public TextMeshPro guideText;
-    public LandmarkPlaceSelector PlaceSelector;
-    public UpgradePanel upgradePanel;
-    [SerializeField] HarvestAllCtrl harvestAllCtrl;
 
-    public int pigiCount;
+    private HarvestAllCtrl harvestAllCtrl;
 
-    public int maxUprade;
+    private int pigiCount;
 
+    private int maxUprade;
+
+    [ReadOnly]
     public LocationObject locationObject;
 
+    [ReadOnly]
     public Price sellPrice = new Price(1, "a");
+    [ReadOnly]
     public float growTime = 10;
 
     private Price defaultPrice;
@@ -32,12 +42,13 @@ public class Landmark : MonoBehaviour
 
     private float SpeedMultiplier, PriceMultiplier;
 
-    public ParamsData paramsData;
     private bool started = false;
 
+    [ReadOnly]
     public bool isBuilding = false;
 
-    System.DateTime buildCompleteTime;
+    [ReadOnly]
+    public System.DateTime buildCompleteTime;
 
     // Start is called before the first frame update
     public void Start()
@@ -45,11 +56,8 @@ public class Landmark : MonoBehaviour
         if (started) return;
         started = true;
 
-        //Deactive Obj if exits.
-        foreach (GameObject obj in growSpots)
-        {
-            obj.SetActive(false);
-        }
+        harvestAllCtrl = HarvestAllCtrl.Instance;
+        if (pigiID == "") pigiID = "pigi_default";
 
         //Load Data from locationObj.
         locationObject = gameObject.GetComponent<LocationObject>();
@@ -65,9 +73,6 @@ public class Landmark : MonoBehaviour
         // LoadData();
         UpdateData();
 
-        //PlaceSelector.SetLandmark(gameObject, placeID);
-        pigi.SetActive(false);
-
         //GetLevelUPInfo
         if(buildCompleteTime > System.DateTime.Now)
         {
@@ -82,30 +87,6 @@ public class Landmark : MonoBehaviour
 
     public void CreatePigi(int amount)
     {
-        if(growSpots.Count != 0)
-        {
-            for(int i = 0; i<amount; i++)
-            {
-                if(i >= growSpots.Count)
-                {
-                    print(string.Format("ERROR : CreatePigi : IDX = {0} exceed bounary", i));
-                    continue;
-                }
-                growSpots[i].SetActive(true);
-                if (!pigis.Contains(growSpots[i])) pigis.Add(growSpots[i]);
-            }
-            return;
-        }
-
-        if(pigis.Count > amount)
-        {
-            for(int i = 0; i > pigis.Count - amount; i++)
-            {
-                Destroy(pigis[pigis.Count - 1 - i]);
-                pigis.Remove(pigis[pigis.Count - 1 - i]);
-            }
-        }
-
         Vector3[] pos = new Vector3[12];
         pos[8] = new Vector3(-4f, 0, 4f); //0
         pos[6] = new Vector3(-4f, 0, 1.33f); //4
@@ -120,11 +101,32 @@ public class Landmark : MonoBehaviour
         pos[10] = new Vector3(1.3f, 0, 4f); //10
         pos[9] = new Vector3(-1.3f, 0, 4f); //9
 
+        if (growSpots.Count != 0)
+        {
+            for(int i = 0; i<amount; i++)
+            {
+                if(i >= growSpots.Count)
+                {
+                    print(string.Format("ERROR : CreatePigi : IDX = {0} exceed bounary", i));
+                    continue;
+                }
+                pos[i] = growSpots[i].position;
+            }
+        }
+
+        if(pigis.Count > amount)
+        {
+            for(int i = 0; i > pigis.Count - amount; i++)
+            {
+                Destroy(pigis[pigis.Count - 1 - i]);
+                pigis.Remove(pigis[pigis.Count - 1 - i]);
+            }
+        }
+
         for(int i = pigis.Count; i<amount; i++)
         {
-            GameObject newPigi = Instantiate(pigi, gameObject.transform);
-            newPigi.SetActive(true);
-            newPigi.transform.localPosition = pos[i];
+            GameObject newPigi = Instantiate(InfoDataManager.Instance.GetPigiItemByID(pigiID).prefab, gameObject.transform);
+            newPigi.GetComponentInChildren<PigiCtrl>().Init(this, pos[i], pigiID);
             pigis.Add(newPigi);
         }
 
@@ -181,14 +183,37 @@ public class Landmark : MonoBehaviour
 
     private void Update()
     {
-        if (!isBuilding) return;
+        if (!isBuilding | Time.frameCount % 30 != 0) return;
 
         System.TimeSpan timeSpan;
         timeSpan = buildCompleteTime - System.DateTime.Now;
+        string outputString = "건설중! ";
 
-        guideText.text = "건설중! " + Mathf.FloorToInt((float)timeSpan.TotalSeconds) + "초 남음";
+        int totalSeconds = Mathf.FloorToInt((float)timeSpan.TotalSeconds);
 
-        if(timeSpan.TotalSeconds <= 0)
+        if(totalSeconds > 3600)
+        {
+            int hr = Mathf.FloorToInt(totalSeconds / 3600f);
+            totalSeconds -= hr * 3600;
+            outputString += hr + "시간 ";
+        }
+
+        if (totalSeconds > 60)
+        {
+            int mn = Mathf.FloorToInt(totalSeconds / 60);
+            totalSeconds -= mn * 60;
+            outputString += mn + "분 ";
+        }
+
+        if(totalSeconds > 0)
+        {
+            outputString += totalSeconds + "초 ";
+        }
+        outputString += "남음";
+
+        guideText.text = outputString;
+
+        if (timeSpan.TotalSeconds <= 0)
         {
             isBuilding = false;
             guideText.gameObject.SetActive(false);

@@ -5,7 +5,6 @@ using UnityEngine;
 public class DebugCtrl : MonoBehaviour
 {
     public MoneyUI money;
-    public ParamsData paramsData;
     public GameObject newPigiAnim;
 
     public void Debug_ToggleDebugPanel()
@@ -36,5 +35,13 @@ public class DebugCtrl : MonoBehaviour
         GameObject anim = Instantiate(newPigiAnim, gameObject.transform.parent.transform);
         anim.GetComponent<NewPigiAnim>().StartAnim();
         anim.SetActive(true);
+    }
+
+    public void RemoveTimers()
+    {
+        foreach(GameObject obj in LocationManger.Instance.allocatedObj)
+        {
+            obj.GetComponent<Landmark>().buildCompleteTime = System.DateTime.Now;
+        }
     }
 }

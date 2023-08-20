@@ -15,17 +15,8 @@ public class BuildPanelCtrl : MonoBehaviour
     private int[] counts = new int[3];
     private bool started = false;
 
-    private void Start()
-    {
-        if (started) return;
-        if (gameObject.activeSelf) gameObject.SetActive(false);
-        started = true;
-    }
-
     public void OpenPanel()
     {
-        Start();
-        //upgradePanel.ClosePanel(false);
         pigiInfoPanel.ClosePanel(false);
         gameObject.SetActive(true);
         UpdatePriceCount();

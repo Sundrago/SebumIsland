@@ -48,8 +48,8 @@ public class PigiInfoPanel : MonoBehaviour
 
         //Set UIs
         string id = target.GetComponent<PigiCtrl>().ID;
-        title_ui.text = GetLocalizedString("pigi", "title_" + id);
-        descr_ui.text = GetLocalizedString("pigi", "descr_" + id);
+        title_ui.text = GetLocalizedString("Pigi", "title_" + id);
+        descr_ui.text = GetLocalizedString("Pigi", "descr_" + id);
     }
 
     public void ClosePanel(bool restoreCam = true)

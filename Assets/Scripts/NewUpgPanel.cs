@@ -46,7 +46,7 @@ public class NewUpgPanel : MonoBehaviour
         UpdateUI();
         targetLandmark.GetComponent<Landmark>().UpdateData();
 
-        myAudio.PlaySFX(1);
+        AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.upgrade);
         if (DOTween.IsTweening(upgrade_btn_ui.transform)) DOTween.Kill(upgrade_btn_ui.transform);
         upgrade_btn_ui.transform.localScale = new Vector3(1f, 1f, 1f);
         upgrade_btn_ui.transform.DOShakeScale(0.3f);
@@ -90,7 +90,7 @@ public class NewUpgPanel : MonoBehaviour
         targetLandmark = landmark;
         locationObject = landmark.GetComponent<LocationObject>();
 
-        title_ui.text = GetLocalizedString("Names", "title_" + landmark.GetComponent<LocationObject>().modelID);
+        title_ui.text = GetLocalizedString("Landmark", landmark.GetComponent<LocationObject>().modelID + "_title");
 
         Vector3 worldPoint = targetLandmark.transform.position;
         worldPoint.y += 10f;

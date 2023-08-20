@@ -5,31 +5,26 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 
+[RequireComponent(typeof(Animator))]
 public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
     [Header("피지 ID")]
     public string ID;
 
-    bool debug2d = true;
-    public Material[] obj_2d = new Material[3];
-    public MeshRenderer plane;
+    [SerializeField] public Material[] obj_2d = new Material[3];
+    [SerializeField] MeshRenderer plane;
 
     public bool autoParticleOn = true;
 
-    public GameObject pigi, Pigi_ParticleFX, Pigi_particleFX_pop;
     public float timer;
+    public float progress;
 
-
-    public PigiInfoPanel pigiInfoPanel;
     public float growTime = 1;
     public Price sellPrice = new Price(1, "a");
     public bool showCoin = true;
     public Landmark landmark;
 
     private int currentStatus = 0;
-
-    private const float dragAmount = 2f;
-
     private bool timerSet = false;
     public bool grown = false;
     private bool harvested = false;
@@ -38,27 +33,36 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
     private System.DateTime startTime;
     private System.TimeSpan timeSpan;
 
-    private Vector2 initialPoint;
-    private Vector3 offset;
+
+
+    private NewPigiCtrl newPigiCtrl;
+    private Animator animator;
 
     private GameObject mainCamera;
     private GameObject coin2d;
     private GameObject myParticle;
-
-    public float progress;
-    public AudioCtrl myAudio;
-
-    public NewPigiCtrl newPigiCtrl;
+    private ParticleSystem.MainModule main;
+    private ParticleSystem.EmissionModule emission;
+    private ParticleSystem.ShapeModule shape;
 
     public void Start()
     {
-        Debug_toggle2D(true);
+        newPigiCtrl = NewPigiCtrl.Instance;
+        animator = gameObject.GetComponent<Animator>();
         
         mainCamera = GameObject.Find("Main Camera"); //Main Camera
         coin2d = GameObject.Find("UI-CANVAS"); //UI-CANVAS
 
-        landmark = gameObject.GetComponentInParent<Landmark>();
         StartTimer();
+    }
+
+    public void Init(Landmark _landmark, Vector3 _pos, string _ID)
+    {
+        ID = _ID;
+        landmark = _landmark;
+        gameObject.transform.parent.gameObject.transform.localPosition = _pos;
+        gameObject.transform.parent.gameObject.SetActive(true);
+        Set2DOBJ(0);
     }
 
     void Update()
@@ -88,9 +92,8 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
             }
         }
 
-        if (harvested & myParticle != null)
+        if (harvested & myParticle!=null && myParticle.gameObject.activeSelf)
         {
-            var shape = myParticle.GetComponent<ParticleSystem>().shape;
             shape.position = gameObject.transform.position;
         }
 
@@ -105,25 +108,9 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
     void PlayAnim(int currentStatus)
     {
         //print(currentStatus);
-        pigi.GetComponent<Animator>().SetTrigger("anim-" + currentStatus);
+        animator.SetTrigger("anim-" + currentStatus);
 
         if(currentStatus == 0) Set2DOBJ(0);
-        //if (!debug2d) return;
-        //switch(currentStatus)
-        //{
-        //    case 0:
-        //        plane.material = obj_2d[0];
-        //        break;
-        //    case 1:
-        //        plane.material = obj_2d[1];
-        //        break;
-        //    case 2:
-        //        plane.material = obj_2d[1];
-        //        break;
-        //    default:
-        //        plane.material = obj_2d[2];
-        //        break;
-        //}
     }
 
     public void StartTimer()
@@ -138,126 +125,20 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
         grown = false;
     }
 
-    //public void OnPointerDown(PointerEventData pointerEventData)
-    //{
-    //    if (!grown) return;
-    //    initialPoint = Camera.main.ScreenToWorldPoint(pointerEventData.position);
-    //    //offset = transform.parent.gameObject.transform.position - Camera.main.ScreenToWorldPoint(pointerEventData.position);
-
-    //    pigi.GetComponent<Animator>().speed = 0f;
-
-    //    myParticle = Instantiate(Pigi_ParticleFX);
-    //    myParticle.SetActive(true);
-    //    var shape = myParticle.GetComponent<ParticleSystem>().shape;
-    //    shape.position = gameObject.transform.position;
-    //    var main = myParticle.GetComponent<ParticleSystem>().main;
-    //    main.startSpeed = 10f;
-    //}
-
-    //public void OnPointerUp(PointerEventData pointerEventData)
-    //{
-    //    if (!grown) return;
-
-    //    if (transform.parent.gameObject.transform.position.y < 2f)
-    //    {
-    //        if (myParticle != null) Destroy(myParticle);
-    //        pop = false;
-    //        Vector3 newPos = transform.parent.gameObject.transform.position;
-    //        newPos.y = 0;
-    //        transform.parent.gameObject.transform.position = newPos;
-    //        pigi.GetComponent<Animator>().SetTrigger("anim-3-idle");
-    //        pigi.GetComponent<Animator>().speed = 1f;
-    //    }
-    //    else
-    //    {
-    //        if(myParticle != null)
-    //        { 
-    //        var main = myParticle.GetComponent<ParticleSystem>().main;
-    //        main.startSpeed = 30f;
-    //        var emission = myParticle.GetComponent<ParticleSystem>().emission;
-    //        emission.rateOverTime = 30;
-    //        }
-
-    //        harvested = true;
-    //        grown = false;
-    //        pigi.GetComponent<Animator>().SetTrigger("anim-5");
-    //        pigi.GetComponent<Animator>().speed = 1f;
-
-    //        if (gameObject.GetComponentInParent<Landmark>().grownPigis.Contains(gameObject))
-    //            gameObject.GetComponentInParent<Landmark>().grownPigis.Remove(gameObject);
-    //    }
-    //}
-
-    //public void OnDrag(PointerEventData pointerEventData)
-    //{
-    //    if (!grown) return;
-
-    //    //Vector3 curScreenPoint = new Vector3(pointerEventData.position.x, pointerEventData.position.y, 0);
-    //    //Vector3 curPosition = Camera.main.ScreenToWorldPoint(curScreenPoint) + offset;
-
-    //    Vector3 curPosition = transform.parent.gameObject.transform.position;
-    //    Vector2 currentPoint = Camera.main.ScreenToWorldPoint(pointerEventData.position);
-    //    if(initialPoint.y < currentPoint.y)
-    //    {
-    //        float dist = Vector2.Distance(initialPoint, currentPoint);
-    //        if(dist < 2f)
-    //        {
-    //            curPosition.y = EaseInExpo(dist / 2f) * 2f;
-    //        } else
-    //        {
-    //            curPosition.y = dist * 2f;
-    //        }
-    //    }
-
-    //    if (!pop)
-    //    {
-    //        if(gameObject.transform.position.y > 2f)
-    //        {
-    //            pop = true;
-    //            GameObject Popticle = Instantiate(Pigi_particleFX_pop);
-    //            Popticle.transform.position = new Vector3(gameObject.transform.position.x, Popticle.transform.position.y, gameObject.transform.position.z);
-    //            Popticle.SetActive(true);
-    //        }
-    //    }
-
-    //    float EaseInExpo(float x){
-    //        return x == 0 ? 0 : Mathf.Pow(2, 10 * x - 10);
-    //    }
-
-    //    //curPosition.x = transform.parent.gameObject.transform.position.x;
-    //    //curPosition.z = transform.parent.gameObject.transform.position.z;
-
-    //    transform.parent.gameObject.transform.position = curPosition;
-
-    //    float normal = (transform.parent.gameObject.transform.position.y) / 6;
-    //    if (normal >= 1) normal = 0.99f;
-    //    else if (normal < 0) normal = 0;
-
-    //    if (myParticle != null)
-    //    {
-    //        var shape = myParticle.GetComponent<ParticleSystem>().shape;
-    //        shape.position = gameObject.transform.position;
-    //    }
-    //    pigi.GetComponent<Animator>().Play("pigi_4", 0, normal);
-    //}
-
     private void AnimFinished()
     {
         if (harvested) AddMoney();
-        ResetAllAnimatorTriggers(pigi.GetComponent<Animator>());
+
+        if (myParticle.gameObject.activeSelf)
+        {
+            emission.rateOverTime = 0;
+        }
+
+        ResetAllAnimatorTriggers(animator);
         Vector3 newPos = transform.parent.gameObject.transform.position;
         newPos.y = 0;
         transform.parent.gameObject.transform.position = newPos;
         StartTimer();
-
-        if(myParticle!= null)
-        {
-            var main = myParticle.GetComponent<ParticleSystem>().main;
-            main.loop = false;
-            var emission = myParticle.GetComponent<ParticleSystem>().emission;
-            emission.rateOverTime = 0;
-        }
-
         pop = false;
     }
 
@@ -276,18 +157,12 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
         harvested = true;
         grown = false;
         timerSet = false;
-        ResetAllAnimatorTriggers(pigi.GetComponent<Animator>());
-        pigi.GetComponent<Animator>().SetTrigger("anim-5");
-        pigi.GetComponent<Animator>().speed = Random.Range(0.7f,1.4f);
+        ResetAllAnimatorTriggers(animator);
+        animator.SetTrigger("anim-5");
+        animator.speed = Random.Range(0.7f,1.4f);
 
         if (!autoParticleOn) return;
-        if (myParticle != null) Destroy(myParticle);
-        myParticle = Instantiate(Pigi_ParticleFX);
-        myParticle.SetActive(true);
-        var shape = myParticle.GetComponent<ParticleSystem>().shape;
-        shape.position = gameObject.transform.position;
-        var main = myParticle.GetComponent<ParticleSystem>().main;
-        main.startSpeed = 10f;
+        CreateAndInitFlyFX();
     }
 
     private void ResetAllAnimatorTriggers(Animator animator)
@@ -301,24 +176,8 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
         }
     }
 
-    public void Debug_toggle2D(bool toggle)
-    {
-        debug2d = toggle;
-
-        if(debug2d)
-        {
-            plane.gameObject.SetActive(true);
-            GetComponent<MeshRenderer>().enabled = false;
-        } else
-        {
-            plane.gameObject.SetActive(false);
-            GetComponent<MeshRenderer>().enabled = true;
-        }
-    }
-
     public void Set2DOBJ(int idx)
     {
-        if (!debug2d) return;
         plane.material = obj_2d[idx];
 
         if(idx == 2)
@@ -326,18 +185,13 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
             grown = true;
             timerSet = false;
             progress = 1f;
-            gameObject.GetComponentInParent<Landmark>().PigiIsReady(gameObject);
+            landmark.PigiIsReady(gameObject);
         }
     }
 
     public void Event_Down()
     {
-        myParticle = Instantiate(Pigi_ParticleFX);
-        myParticle.SetActive(true);
-        var shape = myParticle.GetComponent<ParticleSystem>().shape;
-        shape.position = gameObject.transform.position;
-        var main = myParticle.GetComponent<ParticleSystem>().main;
-        main.startSpeed = 10f;
+        CreateAndInitFlyFX();
     }
 
     public void Event_Drag(float targetY)
@@ -354,10 +208,8 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
             if (targetY > 2.5f)
             {
                 pop = true;
-                GameObject Popticle = Instantiate(Pigi_particleFX_pop);
-                Popticle.transform.position = new Vector3(gameObject.transform.position.x, Popticle.transform.position.y, gameObject.transform.position.z);
-                Popticle.SetActive(true);
-                myAudio.PlaySFX(0);
+                FXManager.Instance.CreateFX(FXType.PigiPopFX, gameObject.transform);
+                AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.pigipop);
             }
         }
 
@@ -379,43 +231,54 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
         if (normal >= 1) normal = 0.99f;
         else if (normal < 0) normal = 0;
 
-        if (myParticle != null)
+        if (myParticle.gameObject.activeSelf)
         {
-            var shape = myParticle.GetComponent<ParticleSystem>().shape;
             shape.position = gameObject.transform.position;
         }
-        pigi.GetComponent<Animator>().Play("pigi_4", 0, normal);
+        animator.Play("pigi_4", 0, normal);
     }
 
     public void Event_Up()
     {
         if (transform.parent.gameObject.transform.position.y < 2.5f)
         {
-            if (myParticle != null) Destroy(myParticle);
+            if (myParticle.gameObject.activeSelf)
+            {
+                emission.rateOverTime = 0;
+            }
             pop = false;
             Vector3 newPos = transform.parent.gameObject.transform.position;
             newPos.y = 0;
             transform.parent.gameObject.transform.position = newPos;
-            pigi.GetComponent<Animator>().SetTrigger("anim-3-idle");
-            pigi.GetComponent<Animator>().speed = 1f;
+            animator.SetTrigger("anim-3-idle");
+            animator.speed = 1f;
         }
         else
         {
-            if (myParticle != null)
+            if (myParticle.gameObject.activeSelf)
             {
-                var main = myParticle.GetComponent<ParticleSystem>().main;
                 main.startSpeed = 30f;
-                var emission = myParticle.GetComponent<ParticleSystem>().emission;
                 emission.rateOverTime = 30;
             }
 
             harvested = true;
             grown = false;
-            pigi.GetComponent<Animator>().SetTrigger("anim-5");
-            pigi.GetComponent<Animator>().speed = 1f;
+            animator.SetTrigger("anim-5");
+            animator.speed = 1f;
 
-            if (gameObject.GetComponentInParent<Landmark>().grownPigis.Contains(gameObject))
-                gameObject.GetComponentInParent<Landmark>().grownPigis.Remove(gameObject);
+            if (landmark.grownPigis.Contains(gameObject))
+                landmark.grownPigis.Remove(gameObject);
         }
+    }
+
+    private void CreateAndInitFlyFX()
+    {
+        myParticle = FXManager.Instance.CreateFX(FXType.FlyFX).gameObject;
+        shape = myParticle.GetComponent<ParticleSystem>().shape;
+        shape.position = gameObject.transform.position;
+        main = myParticle.GetComponent<ParticleSystem>().main;
+        main.startSpeed = 10f;
+        emission = myParticle.GetComponent<ParticleSystem>().emission;
+        emission.rateOverTime = 30;
     }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Sirenix.OdinInspector;
 
 /*
 modelID_family
@@ -11,39 +12,60 @@ modelID_family
 
 public class LocationObject : MonoBehaviour
 {
-    [SerializeField] LocationManger locationManger;
+    private LocationManger locationManger;
 
     [Header("* 가로 세로 사이즈")]
+    [GUIColor(0.4f, 0.8f, 0.8f, 1f), Required]
     public int width;
+    [GUIColor(0.4f, 0.8f, 0.8f, 1f), Required]
     public int height;
 
     [Header("* 피지 건물일 경우 체크")]
+    [GUIColor(0.4f, 0.8f, 0.8f, 1f), Required]
     public bool isLandmark;
 
     [Header("* 피지건물 ID")]
+    [GUIColor(0.4f, 0.8f, 0.8f, 1f), Required]
     public string modelID;
+    [GUIColor(0.4f, 0.8f, 0.8f, 1f), Required]
     public string modelID_family;
+    [GUIColor(0.4f, 0.8f, 0.8f, 1f), Required]
     public int modelID_levelID;
 
     //public TextAsset DesertData;
 
-
     [Header("비워둬도 됨.")]
+    [ReadOnly]
     public int copyN;
+    [ReadOnly]
     public string landMarkID;
+    [ReadOnly]
     public int x;
+    [ReadOnly]
     public int y;
+    [ReadOnly]
     public string charCode;
+    [ReadOnly]
     public int defaultGrowTime;
+    [ReadOnly]
     public int maxUpdateIdx;
+    [ReadOnly]
     public int pigiAmout;
+    [ReadOnly]
     public Price defaultPrice;
+    [ReadOnly]
     public int buildTime;
+    [ReadOnly]
     public Price buildPrice;
+    [ReadOnly]
     public UpgradeDataList data;
+    [ReadOnly]
     public Price levelUpPrice;
+    [ReadOnly]
     public int levelUpTime;
+    [ReadOnly]
     public string nextLevelId;
+    [ReadOnly]
     public int upgradeStatus = 0;
 
     private bool started = false;
@@ -56,6 +78,8 @@ public class LocationObject : MonoBehaviour
     {
         if(started) return;
         started = true;
+
+        locationManger = LocationManger.Instance;
 
         print("LOAD UPGDATA AT : " + modelID);
         landMarkID = modelID + "-" + copyN;

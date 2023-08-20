@@ -13,8 +13,6 @@ public class RemoteUpgrade : MonoBehaviour
 {
     [SerializeField] LocationManger locationManger;
     [SerializeField] MoneyUI money;
-    [SerializeField] AudioCtrl myAudio;
-    [SerializeField] GameObject particleFx;
 
     [SerializeField] TextMeshProUGUI short_title, short_upgCount, short_price, short_upgName;
 
@@ -71,16 +69,14 @@ public class RemoteUpgrade : MonoBehaviour
         GetAvailableUpgrades();
         locationObject.gameObject.GetComponent<Landmark>().UpdateData();
 
-        myAudio.PlaySFX(1);
-        
+        AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.upgrade);
+
         if (DOTween.IsTweening(gameObject.transform)) DOTween.Kill(gameObject.transform);
         gameObject.transform.localScale = new Vector3(1f, 1f, 1f);
         gameObject.transform.DOShakeScale(0.3f);
 
         //Instantiate particle
-        GameObject particle = Instantiate(particleFx);
-        particle.transform.position = locationObject.gameObject.transform.position;
-        particle.SetActive(true);
+        FXManager.Instance.CreateFX(FXType.UpgradeParticleFX, locationObject.gameObject.transform);
     }
 
     private static string GetLocalizedString(string table, string name)

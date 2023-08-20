@@ -47,8 +47,6 @@ public class LocationManger : MonoBehaviour
         }
     }
 
-    public AudioCtrl myAudio;
-
     private List<Location> locations = new List<Location>();
     public List<GameObject> allocatedObj = new List<GameObject>();
     private bool settingMode = false;
@@ -72,6 +70,13 @@ public class LocationManger : MonoBehaviour
     int move_originalPosX, move_originalPosY;
 
     public Material[] mat_sand, mat_ground, mat_grass;
+
+    public static LocationManger Instance;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     //public GraphicRaycaster gr;
 
@@ -445,7 +450,7 @@ public class LocationManger : MonoBehaviour
             return;
         }
 
-        if (!moveMode) myAudio.PlaySFX(2);
+        AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.buildComplete);
 
         upBtn.SetActive(false);
         rightBtn.SetActive(false);
@@ -466,6 +471,7 @@ public class LocationManger : MonoBehaviour
 
     public void MoveBtnClicked(GameObject target)
     {
+        print("MoveBtnClicked");
         moveMode = true;
         settingMode = true;
         targetObj = target;
@@ -633,8 +639,8 @@ public class LocationManger : MonoBehaviour
         Destroy(landmark);
 
         allocatedObj.Add(newLandmark);
-        myAudio.PlaySFX(3);
 
+        AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.levelUp);
         return newLandmark;
     }
 

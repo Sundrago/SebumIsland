@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public struct UpgradeDataList
+public class UpgradeDataList
 {
     public List<UpgradeData> data;
     public string ID;
@@ -34,14 +34,24 @@ public class CSVReader : MonoBehaviour
     [SerializeField] TextAsset CSVData;
     public List<UpgradeDataList> importedData = new List<UpgradeDataList>();
 
+    public static CSVReader Instance;
+
     public bool started = false;
     const int WIDTH = 12;
 
+    private void Awake()
+    {
+        Instance = this;
+        if (started) return;
+        ReadCSV();
+        started = true;
+    }
+
     public void Start()
     {
-       if (started) return;
-       ReadCSV();
-       started = true;
+        if (started) return;
+        ReadCSV();
+        started = true;
     }
 
     void ReadCSV()
@@ -78,6 +88,8 @@ public class CSVReader : MonoBehaviour
 
     public UpgradeDataList GetDataList(string id)
     {
+        if (!started) Awake();
+
         int idx = -1;
         for(int i = 0; i<importedData.Count; i++) {
             if(importedData[i].ID == id) {

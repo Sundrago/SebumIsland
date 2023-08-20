@@ -6,16 +6,12 @@ using UnityEngine.Localization.Settings;
 
 public class NewPigiCtrl : MonoBehaviour
 {
-    public AudioCtrl myAudio;
-
-    public Sprite[] imgs = new Sprite[1];
-    public List<string> ids = new List<string>();
-
     public GameObject newPigiAnim;
+    public static NewPigiCtrl Instance;
 
-    private void Start()
+    private void Awake()
     {
-        newPigiAnim.SetActive(false);
+        Instance = this;
     }
 
     public void GotPigi(string id)
@@ -28,20 +24,22 @@ public class NewPigiCtrl : MonoBehaviour
 
     public void NewPigi(string id)
     {
-        if(!ids.Contains(id))
+        PigiItem pigiItem = InfoDataManager.Instance.GetPigiItemByID(id);
+
+        if(pigiItem == null)
         {
             print("[NewPigiCtrl - NewPigi] ID not found. id = " + id);
             return;
         }
 
         GameObject anim = Instantiate(newPigiAnim, gameObject.transform);
-
-        anim.GetComponent<NewPigiAnim>().img.GetComponent<Image>().sprite = imgs[ids.IndexOf(id)];
-        anim.GetComponent<NewPigiAnim>().pigi_title.text = GetLocalizedString("pigi", "title_" + id);
+        anim.GetComponent<NewPigiAnim>().img.GetComponent<Image>().sprite = pigiItem.Img;
+        anim.GetComponent<NewPigiAnim>().pigi_title.text = GetLocalizedString("Pigi","title_" + id);
         anim.GetComponent<NewPigiAnim>().StartAnim();
         anim.SetActive(true);
+        gameObject.SetActive(true);
 
-        myAudio.PlaySFX(4);
+        AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.newPigiFound);
     }
 
     private static string GetLocalizedString(string table, string name)
