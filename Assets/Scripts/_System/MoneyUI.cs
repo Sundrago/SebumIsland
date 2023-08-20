@@ -79,11 +79,15 @@ public class Price
 
 public class MoneyUI : MonoBehaviour
 {
+    public static MoneyUI Instance;
     public List<Price> balcance = new List<Price>();
+    [SerializeField] public TextMeshProUGUI moneyText;
 
-    public TextMeshProUGUI moneyText;
+    private void Awake()
+    {
+        Instance = this;
+    }
 
-    // Start is called before the first frame update
     void Start()
     {
         Application.targetFrameRate = 60;

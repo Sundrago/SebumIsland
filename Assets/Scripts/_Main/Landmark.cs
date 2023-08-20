@@ -110,7 +110,7 @@ public class Landmark : MonoBehaviour
                     print(string.Format("ERROR : CreatePigi : IDX = {0} exceed bounary", i));
                     continue;
                 }
-                pos[i] = growSpots[i].position;
+                pos[i] = growSpots[i].localPosition;
             }
         }
 
@@ -179,6 +179,15 @@ public class Landmark : MonoBehaviour
 
     public void DestroyLandmark() {
         if (grownPigis.Count == pigis.Count) harvestAllCtrl.RemoveReadyLandmark(gameObject);
+    }
+
+    public void RemovePigiIsReady(GameObject pigi)
+    {
+        if (grownPigis.Count == pigis.Count)
+        {
+            DestroyLandmark();
+        }
+        if (grownPigis.Contains(pigi)) grownPigis.Remove(pigi);
     }
 
     private void Update()

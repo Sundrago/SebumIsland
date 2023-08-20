@@ -210,6 +210,7 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
                 pop = true;
                 FXManager.Instance.CreateFX(FXType.PigiPopFX, gameObject.transform);
                 AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.pigipop);
+                landmark.RemovePigiIsReady(gameObject);
             }
         }
 

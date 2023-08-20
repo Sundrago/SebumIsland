@@ -68,9 +68,10 @@ public class HarvestAllCtrl : MonoBehaviour
     public void RemoveReadyLandmark(GameObject obj) {
         if(readyLandmarks.Contains(obj.GetComponent<Landmark>())) {
             readyLandmarks.Remove(obj.GetComponent<Landmark>());
-
             if(readyLandmarks.Count == 0) UpdateBtnInteractable(false);
         }
+
+        UpdateEasyHarvest();
     }
 
     void Start()
