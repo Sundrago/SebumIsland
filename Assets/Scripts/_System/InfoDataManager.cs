@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Sirenix.OdinInspector;
 using UnityEngine.Localization.Settings;
+/* --------------------------------------------------------------------- */
+
 
 public class InfoDataManager : MonoBehaviour
 {
@@ -43,9 +45,9 @@ public class InfoDataManager : MonoBehaviour
         Debug.Log("cannot find LandmarkItem with id : " + ID);
         return null;
     }
-
-    
 }
+
+/* --------------------------------------------------------------------- */
 
 [Serializable]
 public class PigiItem
