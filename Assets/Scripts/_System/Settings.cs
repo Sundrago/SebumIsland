@@ -19,6 +19,10 @@ public class Settings : MonoBehaviour
 
     public void Show()
     {
+        if (gameObject.activeSelf) return;
+        PanelManager.Instance.CloseOtherPanels(gameObject);
+
+        //SHOW ANIM
         gameObject.transform.localPosition = Vector3.zero;
         gameObject.transform.localEulerAngles = Vector3.zero;
 
@@ -40,6 +44,9 @@ public class Settings : MonoBehaviour
 
     public void Hide()
     {
+        if (!gameObject.activeSelf) return;
+
+        //HIDE ANIM
         gameObject.transform.localPosition = Vector3.zero;
         gameObject.transform.localEulerAngles = Vector3.zero;
 

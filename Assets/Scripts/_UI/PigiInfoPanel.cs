@@ -37,6 +37,7 @@ public class PigiInfoPanel : MonoBehaviour
 
     public void OpenPanel(GameObject target)
     {
+        PanelManager.Instance.CloseOtherPanels(gameObject);
         gameObject.SetActive(true);
         targetPigi = target;
         UpdateInfo();

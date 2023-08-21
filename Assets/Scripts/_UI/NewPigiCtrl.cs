@@ -19,7 +19,7 @@ public class NewPigiCtrl : MonoBehaviour
         if (!PlayerPrefs.HasKey(id + "_count")) NewPigi(id);
 
         PlayerPrefs.SetInt(id + "_count", PlayerPrefs.GetInt(id + "_count") + 1);
-        print("피지획득 | " + id + " | " + PlayerPrefs.GetInt(id + "_count"));
+        //print("피지획득 | " + id + " | " + PlayerPrefs.GetInt(id + "_count"));
     }
 
     public void NewPigi(string id)

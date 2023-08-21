@@ -119,9 +119,10 @@ public class LocationObject : MonoBehaviour
         GameObject nextLandmark = locationManger.FindAvailableObj(nextLevelId);
         if(nextLandmark != null)
         {
+            UpgradeDataList nextLevel = CSVReader.Instance.GetDataList(nextLevelId);
             nextLandmark.GetComponent<LocationObject>().ReadCSV();
-            levelUpPrice = nextLandmark.GetComponent<LocationObject>().buildPrice;
-            levelUpTime = nextLandmark.GetComponent<LocationObject>().buildTime;
+            levelUpPrice = nextLevel.buildPrice;
+            levelUpTime = nextLevel.buildTime;
         } else print("UpgradePanel : FAIL TO PARS nextLevelId");
     }
 

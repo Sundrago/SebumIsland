@@ -1,8 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+using DG.Tweening;
 
 public class BuildPanelCtrl : MonoBehaviour
 {
@@ -46,67 +45,38 @@ public class BuildPanelCtrl : MonoBehaviour
         }
     }
 
-    //[SerializeField] UpgradePanel upgradePanel;
-    //[SerializeField] PigiInfoPanel pigiInfoPanel;
-    //[SerializeField] LocationManger locationManger;
-    //[SerializeField] BuildBtnSet[] buildBtns = new BuildBtnSet[2];
-    //[SerializeField] string[] familyIds = new string[2];
-
-    //private int[] counts = new int[3];
-    //private bool started = false;
-
     public void OpenPanel()
     {
-        //pigiInfoPanel.ClosePanel(false);
+        if (gameObject.activeSelf) return;
+        PanelManager.Instance.CloseOtherPanels(gameObject);
+
+        //SHOW ANIM
+        gameObject.transform.localPosition = Vector3.zero;
+        gameObject.transform.localEulerAngles = Vector3.zero;
+        if (DOTween.IsTweening(gameObject.transform)) DOTween.Kill(gameObject.transform);
+        gameObject.transform.DOLocalMove(new Vector3(-2500, -500, 0), 0.5f)
+            .SetEase(Ease.OutExpo)
+            .From();
+        gameObject.transform.DOLocalRotate(new Vector3(0, 0, 10), 0.5f)
+            .SetEase(Ease.OutBack)
+            .From();
+
         gameObject.SetActive(true);
-        //UpdatePriceCount();
     }
 
     public void ClosePanel()
     {
-        gameObject.SetActive(false);
+        if (!gameObject.activeSelf) return;
+
+        //HIDE ANIM
+        gameObject.transform.localPosition = Vector3.zero;
+        gameObject.transform.localEulerAngles = Vector3.zero;
+
+        if (DOTween.IsTweening(gameObject.transform)) DOTween.Kill(gameObject.transform);
+        gameObject.transform.DOLocalMove(new Vector3(2500, 500, 0), 0.5f)
+            .SetEase(Ease.InQuint);
+        gameObject.transform.DOLocalRotate(new Vector3(0, 0, 10), 0.5f)
+            .SetEase(Ease.OutBack)
+            .OnComplete(() => gameObject.SetActive(false));
     }
-
-    //public void BuildPigiBtnClicked(int idx)
-    //{
-    //    switch(idx)
-    //    {
-    //        case 0:
-    //            locationManger.BuildNewLandmark("farm0", 0);
-    //            break;
-    //        case 1:
-    //            locationManger.BuildNewLandmark("tree0", 0);
-    //            break;
-    //        case 2:
-    //            locationManger.BuildNewLandmark("oilfall0", 0);
-    //            break;
-    //        default:
-    //            break;
-    //    }
-
-    //    //UpdatePriceCount();
-    //    gameObject.SetActive(false);
-    //}
-
-    //public void UpdatePriceCount()
-    //{
-    //    for(int i = 0; i< familyIds.Length; i++)
-    //    {
-    //        //count
-    //        counts[i] = locationManger.CountObj(familyIds[i]);
-    //        buildBtns[i].count.text = counts[i] + "/3";
-
-    //        //price
-    //        LocationObject locationObj = locationManger.FindAvailableObj(familyIds[i] + "0").GetComponent<LocationObject>();
-    //        print(locationObj.gameObject.name);
-    //        if (locationObj == null) continue;
-
-    //        locationObj.ReadCSV();
-    //        Price price = locationObj.buildPrice;
-    //        int buildTime = locationObj.buildTime;
-    //        buildBtns[i].btn_text.text = price.GetString();
-    //        buildBtns[i].buildTime.text = buildTime.ToString() + "초";
-    //        print(price.GetString());
-    //    }
-    //}
 }

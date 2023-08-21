@@ -52,6 +52,8 @@ public class PinchZoom : MonoBehaviour
     const float orthoZoomSpeed = 0.05f;
     const float camMoveSpeed = 0.001f;
 
+    [SerializeField] GameObject settings, collection, build;
+
     //public CameraTransition camTrans = new CameraTransition();
     public NewUpgPanel upgradePanel;
     public PigiInfoPanel pigiInfoPanel;
@@ -75,7 +77,7 @@ public class PinchZoom : MonoBehaviour
 
     private void Start()
     {
-        Application.targetFrameRate = 60;
+        //Application.targetFrameRate = 60;
         targetPosition = Camera.main.transform.position;
         targetSize = Camera.main.orthographicSize;
         SetSliderValue();
@@ -84,6 +86,7 @@ public class PinchZoom : MonoBehaviour
     void Update()
     {
         if (DOTween.IsTweening(Camera.main) | DOTween.IsTweening(Camera.main.transform)) return;
+        if (settings.activeSelf || collection.activeSelf || build.activeSelf) return;
 
         if (Vector3.Distance(targetPosition, Camera.main.transform.position) > 0.1f)
         {

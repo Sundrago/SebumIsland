@@ -32,6 +32,8 @@ public class HarvestAllCtrl : MonoBehaviour
         if (readyLandmarks.Count == 0) return;
         if(readyLandmarks[0] != null) readyLandmarks[0].HarvestAll();
         readyLandmarks.RemoveAt(0);
+        AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.yeah);
+        AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.smallPopPop);
 
         UpdateEasyHarvest();
     }

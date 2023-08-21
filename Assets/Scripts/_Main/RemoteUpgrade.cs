@@ -25,6 +25,7 @@ public class RemoteUpgrade : MonoBehaviour
         locationObject = null;
         for(int i = 0; i<allocatedObj.Count; i++) {
             LocationObject location = allocatedObj[i].GetComponent<LocationObject>();
+            if (location == null) continue;
             Price upgradePrice = location.GetUpgradePrice();
 
             if( (lowPrice.idx > upgradePrice.idx) || (lowPrice.idx == upgradePrice.idx && lowPrice.amount > upgradePrice.amount)) {

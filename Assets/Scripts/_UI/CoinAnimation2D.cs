@@ -14,7 +14,7 @@ public class Coin
     {
         onTransition = true;
         startPos = starts;
-        targetPos = new Vector2(startPos.x + Random.Range(0, Screen.width) - Screen.width/2, Screen.height - Random.Range(0, Screen.height * velocity));
+        targetPos = new Vector2(startPos.x + Random.Range(0, Screen.width) - Screen.width/2, Screen.height - Random.Range(0, Screen.height/2f * velocity));
         endPos = end;
         startTime = Time.time;
         endTime = startTime + Vector2.Distance(startPos, targetPos) / 1250f;

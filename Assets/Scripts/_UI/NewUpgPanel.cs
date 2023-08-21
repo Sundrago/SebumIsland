@@ -21,7 +21,6 @@ public class NewUpgPanel : MonoBehaviour
     public GameObject targetLandmark;
 
     public GameObject upgrade_btn_ui;
-    public GameObject particleFx;
 
     public LocationManger locationManger;
 
@@ -52,9 +51,7 @@ public class NewUpgPanel : MonoBehaviour
         upgrade_btn_ui.transform.DOShakeScale(0.3f);
 
         //Instantiate particle
-        GameObject particle = Instantiate(particleFx);
-        particle.transform.position = targetLandmark.transform.position;
-        particle.SetActive(true);
+        FXManager.Instance.CreateFX(FXType.UpgradeParticleFX, gameObject.transform);
 
         remoteUpgrade.GetAvailableUpgrades();
         CheckEnoughMoney();
@@ -73,7 +70,7 @@ public class NewUpgPanel : MonoBehaviour
             upgrade_btn_ui.GetComponent<Image>().color = Color.yellow;
             info1.text = "레벨업 준비";
         } else {
-            upgrade_btn_ui.GetComponent<Image>().color = new Color(0.1764706f, 0.8313726f, 0.7490196f, 0.7843137f);
+            upgrade_btn_ui.GetComponent<Image>().color = Color.white;
 
             float PriceMultiplier = locationObject.data.data[locationObject.upgradeStatus].value;
             float SpeedMultiplier = locationObject.data.data[locationObject.upgradeStatus].speed;
@@ -84,6 +81,7 @@ public class NewUpgPanel : MonoBehaviour
 
     public void OpenPanel(GameObject landmark)
     {
+        PanelManager.Instance.CloseOtherPanels(gameObject);
         gameObject.SetActive(true);
         gameObject.GetComponent<Animator>().ResetTrigger("shrink");
         gameObject.GetComponent<Animator>().SetTrigger("grow");
@@ -104,12 +102,18 @@ public class NewUpgPanel : MonoBehaviour
 
     public void ClosePanel()
     {
+        if (!gameObject.activeSelf) return;
         gameObject.GetComponent<Animator>().ResetTrigger("grow");
         gameObject.GetComponent<Animator>().SetTrigger("shrink");
         //gameObject.SetActive(false);
         targetLandmark = null;
         bg_btn.SetActive(false);
         //targetPos = Vector2.zero;
+    }
+
+    public void DeactiveSelf()
+    {
+        gameObject.SetActive(false);
     }
 
     private static string GetLocalizedString(string table, string name)

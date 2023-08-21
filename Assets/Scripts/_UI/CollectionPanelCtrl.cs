@@ -15,7 +15,9 @@ public class CollectionPanelCtrl : MonoBehaviour
     }
 
     public void Show() {
-        if(!collection_pigi.PigiInitialized) collection_pigi.InitializePigiCollection();
+        if (gameObject.activeSelf) return;
+        PanelManager.Instance.CloseOtherPanels(gameObject);
+        if (!collection_pigi.PigiInitialized) collection_pigi.InitializePigiCollection();
         gameObject.transform.localPosition = Vector3.zero;
         gameObject.transform.localEulerAngles = Vector3.zero;
 
@@ -31,6 +33,7 @@ public class CollectionPanelCtrl : MonoBehaviour
     }
 
     public void Hide() {
+        if (!gameObject.activeSelf) return;
         gameObject.transform.localPosition = Vector3.zero;
         gameObject.transform.localEulerAngles = Vector3.zero;
 

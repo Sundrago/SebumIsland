@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using Sirenix.OdinInspector;
 
-public enum SFX_tag {pigipop, upgrade, buildComplete, levelUp, newPigiFound, correct, yeah, }
+public enum SFX_tag {pigipop, upgrade, buildComplete, levelUp, newPigiFound, correct, yeah, smallPopPop, bgm_main}
 
 public class AudioCtrl : SerializedMonoBehaviour
 {
@@ -14,6 +14,10 @@ public class AudioCtrl : SerializedMonoBehaviour
 
     [TableList(ShowIndexLabels = true)]
     [SerializeField] AudioData[] audioDatas;
+
+    private float sfxVolume = 0.8f;
+    private float bgmVolume = 0.8f;
+    private AudioData bgmPlaying = null;
 
     private void Awake()
     {
@@ -37,7 +41,7 @@ public class AudioCtrl : SerializedMonoBehaviour
         {
             if(data.tag == tag)
             {
-                sfx_source.PlayOneShot(data.src);
+                sfx_source.PlayOneShot(data.src, data.volume * sfxVolume);
             }
         }
         //sfx_source.PlayOneShot(audioClips[(int)tag]);
@@ -45,8 +49,27 @@ public class AudioCtrl : SerializedMonoBehaviour
 
     public void SetVolume()
     {
+        sfxVolume = PlayerPrefs.GetFloat("settings_sfx_voulume");
+        bgmVolume = PlayerPrefs.GetFloat("settings_bgm_voulume");
         sfx_source.volume = PlayerPrefs.GetFloat("settings_sfx_voulume");
-        bgm_source.volume = PlayerPrefs.GetFloat("settings_bgm_voulume");
+
+        if (bgmPlaying == null) bgm_source.volume = PlayerPrefs.GetFloat("settings_bgm_voulume");
+        else bgm_source.volume = PlayerPrefs.GetFloat("settings_bgm_voulume") * bgmPlaying.volume;
+    }
+
+    public void PlayBGM(SFX_tag tag)
+    {
+        foreach (AudioData data in audioDatas)
+        {
+            if (data.tag == tag)
+            {
+                bgmPlaying = data;
+                bgm_source.clip = data.src;
+                bgm_source.volume = data.volume * bgmVolume;
+                bgm_source.Play();
+                return;
+            }
+        }
     }
 
     [Serializable]
@@ -54,6 +77,8 @@ public class AudioCtrl : SerializedMonoBehaviour
     {
         public SFX_tag tag;
         public AudioClip src;
+        [Range(0f, 1f)]
+        public float volume = 0.8f;
     }
 
 }

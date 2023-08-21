@@ -60,7 +60,6 @@ public class LocationManger : MonoBehaviour
 
     public Material defaultMaterial, occupiedMaterial, possibleMaterial, notPossibleMaterial;
 
-    public List<GameObject> availableObj = new List<GameObject>();
     public GameObject finishBtn;
     public GameObject buildBtnSet;
 
@@ -646,15 +645,15 @@ public class LocationManger : MonoBehaviour
 
     public GameObject FindAvailableObj(string modelID)
     {
-        foreach(GameObject obj in availableObj)
+        LandmarkItem landmarkItem = InfoDataManager.Instance.GetLandmarkItemByID(modelID);
+
+        if(landmarkItem == null)
         {
-            if(obj.GetComponent<LocationObject>().modelID == modelID)
-            {
-                return obj;
-            }
+            print("[LocationManger - FindAvailableObj] Cannot find obj. modelID = " + modelID);
+            return null;
         }
-        print("[LocationManger - FindAvailableObj] Cannot find obj. modelID = " + modelID);
-        return null;
+
+        return landmarkItem.prefab;
     }
 
     public int CountObj(string id)
