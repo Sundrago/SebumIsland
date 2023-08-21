@@ -222,7 +222,7 @@ public class Landmark : MonoBehaviour
 
         guideText.text = outputString;
 
-        if (timeSpan.TotalSeconds <= 0)
+        if (totalSeconds <= 0)
         {
             isBuilding = false;
             guideText.gameObject.SetActive(false);
