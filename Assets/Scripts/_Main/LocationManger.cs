@@ -561,6 +561,7 @@ public class LocationManger : MonoBehaviour
         allocatedObj.Add(obj);
         UpdateLocations();
 
+        QuestTutorialManager.Instance.OilFarm0Build();
         //SavePositionData
     }
 

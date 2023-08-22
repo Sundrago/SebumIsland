@@ -78,6 +78,10 @@ public class RemoteUpgrade : MonoBehaviour
 
         //Instantiate particle
         FXManager.Instance.CreateFX(FXType.UpgradeParticleFX, locationObject.gameObject.transform);
+
+        //tutorial 05
+        QuestTutorialManager.Instance.Addfarm0UpdateCount();
+        QuestTutorialManager.Instance.AddFastUpgradeClickCount();
     }
 
     private static string GetLocalizedString(string table, string name)

@@ -36,6 +36,9 @@ public class HarvestAllCtrl : MonoBehaviour
         AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.smallPopPop);
 
         UpdateEasyHarvest();
+
+        //tutorial 04
+        QuestTutorialManager.Instance.AddHarvestAllClickCount();
     }
 
     public void AddReadyLandmark(GameObject obj) {

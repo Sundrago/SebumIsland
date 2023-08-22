@@ -11,7 +11,6 @@ public class PigiInfoPanel : MonoBehaviour
     public Slider slider_ui;
     public TextMeshProUGUI progress_ui_text, price, time;
 
-    public UpgradePanel upgradePanel;
     private Vector3 camPos;
     private float camZoom;
 

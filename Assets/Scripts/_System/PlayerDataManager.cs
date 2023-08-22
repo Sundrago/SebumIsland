@@ -123,7 +123,7 @@ public class PlayerDataManager : MonoBehaviour
 
     private void Start()
     {
-		LoadData();
+		//LoadData();
     }
 }
 

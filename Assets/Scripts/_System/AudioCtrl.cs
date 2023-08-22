@@ -4,7 +4,7 @@ using UnityEngine;
 using System;
 using Sirenix.OdinInspector;
 
-public enum SFX_tag {pigipop, upgrade, buildComplete, levelUp, newPigiFound, correct, yeah, smallPopPop, bgm_main}
+public enum SFX_tag {pigipop, upgrade, buildComplete, levelUp, newPigiFound, correct, yeah, smallPopPop, bgm_main, quest_arrive, quest_clear}
 
 public class AudioCtrl : SerializedMonoBehaviour
 {

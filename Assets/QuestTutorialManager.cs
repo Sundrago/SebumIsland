@@ -20,15 +20,23 @@ public class QuestTutorialManager : MonoBehaviour
 
     [SerializeField] GameObject hand, particleFX;
 
-    [SerializeField] GameObject buildBtn, buildPanel, build_farm_btn;
-
     int state;
     int tearsCount, tearsMaxCount = 0;
     bool completed;
 
+    public static QuestTutorialManager Instance;
+
+    private void Awake()
+    {
+        PlayerPrefs.DeleteAll();
+        Instance = this;
+    }
+
     [Button]
     void Start()
     {
+        MoneyUI.Instance.AddMoney(new Price(5));
+
         ChangeState(1);
 
         //for(int i = 0; i<8; i++)
@@ -45,52 +53,25 @@ public class QuestTutorialManager : MonoBehaviour
         if (Time.frameCount % 10 != 0) return;
         if (completed) return;
 
-        particleFX.transform.position = Camera.main.ScreenToWorldPoint(hand.transform.position);
-
         switch (state)
         {
             case 1:
-                //허름한 피지 농장을 건설하세요!
-                if (LocationManger.Instance.allocatedObj.Count != 0) UpdateTears(1);
-
-                if(LocationManger.Instance.settingMode)
-                {
-                    hand.gameObject.SetActive(false);
-                    particleFX.gameObject.SetActive(false);
-                } else
-                {
-                    hand.gameObject.SetActive(true);
-                    particleFX.gameObject.SetActive(true);
-
-                    if (buildPanel.activeSelf)
-                    {
-                        hand.transform.position = build_farm_btn.transform.position;
-                    }
-                    else
-                    {
-                        hand.transform.position = buildBtn.transform.position;
-                    }
-                }
-                break;  
-                
+                CheckTutorial_1();
+                break;
             case 2:
-                //베이직 피지를 네 개 수확하세요!
-
+                CheckTutorial_2();
                 break;
             case 3:
-                //허름한 피지를 업그레이드 하세요!
-
+                CheckTutorial_3();
                 break;
             case 4:
-                //한번에 수확 버튼을 눌러 수확하세요!
-
+                CheckTutorial_4();
                 break;
             case 5:
-                //빠른 업그레이드 버튼을 눌러 업그레이드 하세요!
-
+                CheckTutorial_5();
                 break;
             case 6:
-                //피지샘을 건설하세요!
+                CheckTutorial_6();
                 break;
 
         }
@@ -98,48 +79,27 @@ public class QuestTutorialManager : MonoBehaviour
 
     void ChangeState(int _state)
     {
-        print(_state);
         state = _state;
-        ShowQuest();
 
         switch(state)
         {
             case 1:
-                //허름한 피지 농장을 건설하세요!
-                mission_text.text = tutorial[0];
-                InitiateTear(1);
-                ShowQuest();
+                InitTutorial_1();
                 break;
             case 2:
-                //베이직 피지를 네 개 수확하세요!
-                mission_text.text = tutorial[1];
-                InitiateTear(4);
-                ShowQuest();
-
-                hand.gameObject.SetActive(false);
-                particleFX.gameObject.SetActive(false);
-
+                InitTutorial_2();
                 break;
             case 3:
-                //허름한 피지를 업그레이드 하세요!
-                mission_text.text = tutorial[2];
-                InitiateTear(2);
-                ShowQuest();
+                InitTutorial_3();
                 break;
             case 4:
-                //한번에 수확 버튼을 눌러 수확하세요!
-                mission_text.text = tutorial[3];
-                InitiateTear(1);
-                ShowQuest();
+                InitTutorial_4();
                 break;
             case 5:
-                //빠른 업그레이드 버튼을 눌러 업그레이드 하세요!
-                mission_text.text = tutorial[4];
-                InitiateTear(4);
-                ShowQuest();
+                InitTutorial_5();
                 break;
             case 6:
-                //피지샘을 건설하세요!
+                InitTutorial_6();
                 break;
 
         }
@@ -149,6 +109,8 @@ public class QuestTutorialManager : MonoBehaviour
     {
         gameObject.transform.DOLocalMoveX(-0, 1f)
             .SetEase(Ease.OutExpo);
+
+        AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.quest_arrive);
     }
 
     void HideQuest()
@@ -198,7 +160,7 @@ public class QuestTutorialManager : MonoBehaviour
     [Button]
     void UpdateTears(int count)
     {
-        print("UpdateTears");
+        print("UpdateTears "+count);
         if (completed) return;
 
         tearsCount = count;
@@ -210,17 +172,197 @@ public class QuestTutorialManager : MonoBehaviour
 
         if(count >= tearsMaxCount)
         {
-            for(int i = 0; i<count; i++)
+            //clear
+            AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.quest_clear);
+            for (int i = 0; i<count; i++)
             {
                 tears[i].DOFade(0f, 0.5f);
             }
             complete_img.gameObject.SetActive(true);
             complete_img.gameObject.transform.DOPunchScale(Vector3.one, 1f, 7, 0.7f)
-                .OnComplete(()=> { HideQuest(); });
+                .OnComplete(()=> { HideQuest();
+                    hand.SetActive(false);
+                    particleFX.SetActive(false);
+                });
             completed = true;
+            hand.SetActive(false);
+            particleFX.SetActive(false);
+        }
+    }
+
+
+
+    /* ------------------------------------------------------------------------ */
+
+    //허름한 피지 농장을 건설하세요!
+    [TitleGroup("Tutorial 1")]
+    [SerializeField] GameObject buildBtn, buildPanel, build_farm_btn;
+
+    void InitTutorial_1()
+    {
+        
+        mission_text.text = tutorial[0];
+        InitiateTear(1);
+        ShowQuest();
+    }
+
+    void CheckTutorial_1()
+    {
+        particleFX.transform.position = Camera.main.ScreenToWorldPoint(hand.transform.position);
+
+        if (LocationManger.Instance.allocatedObj.Count != 0) UpdateTears(1);
+
+        if (LocationManger.Instance.settingMode)
+        {
             hand.gameObject.SetActive(false);
             particleFX.gameObject.SetActive(false);
         }
+        else
+        {
+            hand.gameObject.SetActive(true);
+            particleFX.gameObject.SetActive(true);
+
+            if (buildPanel.activeSelf)
+            {
+                hand.transform.position = build_farm_btn.transform.position;
+            }
+            else
+            {
+                hand.transform.position = buildBtn.transform.position;
+            }
+        }
+    }
+
+    /* ------------------------------------------------------------------------ */
+
+    //베이직 피지를 네 개 수확하세요!
+    [TitleGroup("Tutorial 2")]
+    int basicPigiCount;
+
+    void InitTutorial_2()
+    {
+        basicPigiCount = 0;
+        mission_text.text = tutorial[1];
+        InitiateTear(4);
+        ShowQuest();
+    }
+
+    void CheckTutorial_2()
+    {
 
     }
+
+    public void AddBasicPigiCount()
+    {
+        if (state != 2) return;
+        basicPigiCount += 1;
+        UpdateTears(basicPigiCount);
+    }
+
+    /* ------------------------------------------------------------------------ */
+
+    //허름한 농장을 업그레이드 하세요!
+    [TitleGroup("Tutorial 3")]
+    int farm0UpdateCount;
+
+    void InitTutorial_3()
+    {
+        farm0UpdateCount = 0;
+        mission_text.text = tutorial[2];
+        InitiateTear(1);
+        ShowQuest();
+    }
+
+    void CheckTutorial_3()
+    {
+
+    }
+
+    public void Addfarm0UpdateCount()
+    {
+        if (state != 3) return;
+        farm0UpdateCount += 1;
+        UpdateTears(farm0UpdateCount);
+    }
+
+    /* ------------------------------------------------------------------------ */
+
+    //한번에 수확 버튼을 눌러 수확하세요!
+    [TitleGroup("Tutorial 4")]
+    int harvestAllClickCount;
+
+
+    void InitTutorial_4()
+    {
+        harvestAllClickCount = 0;
+        mission_text.text = tutorial[3];
+        InitiateTear(1);
+        ShowQuest();
+    }
+
+    void CheckTutorial_4()
+    {
+
+    }
+
+    public void AddHarvestAllClickCount()
+    {
+        if (state != 4) return;
+        harvestAllClickCount += 1;
+        UpdateTears(harvestAllClickCount);
+    }
+
+    /* ------------------------------------------------------------------------ */
+
+    //빠른 업그레이드 버튼을 눌러 업그레이드 하세요!
+    [TitleGroup("Tutorial 5")]
+    int fastUpgradeClickCount;
+
+    void InitTutorial_5()
+    {
+        fastUpgradeClickCount = 0;
+        mission_text.text = tutorial[4];
+        InitiateTear(1);
+        ShowQuest();
+    }
+
+    void CheckTutorial_5()
+    {
+
+    }
+
+    public void AddFastUpgradeClickCount()
+    {
+        if (state != 5) return;
+        fastUpgradeClickCount += 1;
+        UpdateTears(fastUpgradeClickCount);
+    }
+
+    /* ------------------------------------------------------------------------ */
+
+
+    //피지샘을 건설하세요!
+    [TitleGroup("Tutorial 6")]
+
+
+    void InitTutorial_6()
+    {
+        mission_text.text = tutorial[5];
+        InitiateTear(1);
+        ShowQuest();
+    }
+
+    void CheckTutorial_6()
+    {
+
+    }
+
+    public void OilFarm0Build()
+    {
+        if (state != 6) return;
+        UpdateTears(1);
+    }
+
+    /* ------------------------------------------------------------------------ */
+
 }

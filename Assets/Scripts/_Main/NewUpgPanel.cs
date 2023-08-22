@@ -55,6 +55,12 @@ public class NewUpgPanel : MonoBehaviour
 
         remoteUpgrade.GetAvailableUpgrades();
         CheckEnoughMoney();
+
+        //tutorial 03
+        if (locationObject.landMarkID == "farm0-0")
+        {
+            QuestTutorialManager.Instance.Addfarm0UpdateCount();
+        }
     }
 
     void UpdateUI()
