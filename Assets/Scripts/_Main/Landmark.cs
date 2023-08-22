@@ -155,15 +155,12 @@ public class Landmark : MonoBehaviour
 
     public void SetupPigi()
     {
-        print("SetupPigi");
         CreatePigi(pigiCount);
 
         foreach (GameObject obj in pigis)
         {
             PigiCtrl pigi = obj.transform.Find("Pigi").GetComponent<PigiCtrl>();
             pigi.Start();
-            pigi.StartTimer();
-            print("starttimer");
         }
     }
 

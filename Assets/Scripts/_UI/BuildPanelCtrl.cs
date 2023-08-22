@@ -45,6 +45,14 @@ public class BuildPanelCtrl : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if(Time.frameCount % 60 == 0)
+        {
+            UpdateBtns();
+        }
+    }
+
     public void OpenPanel()
     {
         if (gameObject.activeSelf) return;

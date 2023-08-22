@@ -6,6 +6,7 @@ public class DebugCtrl : MonoBehaviour
 {
     public MoneyUI money;
     public GameObject newPigiAnim;
+    [SerializeField] Skybox2D_Manager skybox;
 
     public void Debug_ToggleDebugPanel()
     {
@@ -43,5 +44,10 @@ public class DebugCtrl : MonoBehaviour
         {
             obj.GetComponent<Landmark>().buildCompleteTime = System.DateTime.Now;
         }
+    }
+
+    public void ChangeBG()
+    {
+        skybox.DebugChangeMood();
     }
 }

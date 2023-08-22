@@ -162,7 +162,7 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
         animator.speed = Random.Range(0.7f,1.4f);
 
         if (!autoParticleOn) return;
-        CreateAndInitFlyFX();
+        CreateAndInitFlyFX(10);
     }
 
     private void ResetAllAnimatorTriggers(Animator animator)
@@ -272,7 +272,7 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
         }
     }
 
-    private void CreateAndInitFlyFX()
+    private void CreateAndInitFlyFX(int count = 20)
     {
         myParticle = FXManager.Instance.CreateFX(FXType.FlyFX).gameObject;
         shape = myParticle.GetComponent<ParticleSystem>().shape;
@@ -280,6 +280,6 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
         main = myParticle.GetComponent<ParticleSystem>().main;
         main.startSpeed = 10f;
         emission = myParticle.GetComponent<ParticleSystem>().emission;
-        emission.rateOverTime = 30;
+        emission.rateOverTime = count;
     }
 }

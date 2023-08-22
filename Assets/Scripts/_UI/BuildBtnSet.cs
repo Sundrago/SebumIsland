@@ -50,7 +50,10 @@ public class BuildBtnSet : MonoBehaviour
 
     public void OnBtnClicked()
     {
-        if(MoneyUI.Instance.SubtractMoney(price)) LocationManger.Instance.BuildNewLandmark(ID, count);
-        gameObject.transform.GetComponentInParent<BuildPanelCtrl>().ClosePanel();
+        if (MoneyUI.Instance.HasEnoughMoney(price))
+        {
+            LocationManger.Instance.BuildNewLandmark(ID, count, price);
+            gameObject.transform.GetComponentInParent<BuildPanelCtrl>().ClosePanel();
+        }
     }
 }

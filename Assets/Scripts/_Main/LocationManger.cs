@@ -49,10 +49,11 @@ public class LocationManger : MonoBehaviour
 
     private List<Location> locations = new List<Location>();
     public List<GameObject> allocatedObj = new List<GameObject>();
-    private bool settingMode = false;
+    public bool settingMode = false;
     private int targetX, targetY, targetW, targetH;
     private bool targetAvialable;
     private GameObject targetObj;
+    private Price buildPrice;
 
     public int colCount, rowCount;
 
@@ -125,7 +126,7 @@ public class LocationManger : MonoBehaviour
                         Camera.main.GetComponent<PinchZoom>().buildMode = true;
                         touchCountDelta = 1;
                         targetIdxDelta = idx;
-                        print("drag begin : " + idx);
+                        ////print("drag begin : " + idx);
                         return;
                     }
                 }
@@ -139,7 +140,7 @@ public class LocationManger : MonoBehaviour
                     int idx = hit.collider.gameObject.GetComponent<LocationMarkTouchEvent>().idx;
                     if(idx == targetIdxDelta) return;
                     targetIdxDelta = idx;
-                    print("clcicked");
+                    ////print("clcicked");
                     LocationMarkClicked(idx);
                     touchCountDelta = 1;
                 }
@@ -174,7 +175,7 @@ public class LocationManger : MonoBehaviour
     }
 
     private void UpdateTerrain() {
-        print("TerrainUpdated ");
+        ////print("TerrainUpdated ");
         foreach(Location location in locations) {
             int[] shape = GetTerrainShape(location);
 
@@ -246,7 +247,7 @@ public class LocationManger : MonoBehaviour
         {
             if (locations[i].x == x & locations[i].y == y) return locations[i];
         }
-        print(string.Format("[LocationManager : GetLocation] Can't find locationsMark on x : {0}, y : {1}", x, y));
+        ////print(string.Format("[LocationManager : GetLocation] Can't find locationsMark on x : {0}, y : {1}", x, y));
         return null;
     }
 
@@ -256,7 +257,7 @@ public class LocationManger : MonoBehaviour
         {
             if (locations[i].x == x & locations[i].y == y) return i;
         }
-        print(string.Format("[LocationManager : GetLocationIdx] Can't find locationsIDX on x : {0}, y : {1}", x, y));
+        ////print(string.Format("[LocationManager : GetLocationIdx] Can't find locationsIDX on x : {0}, y : {1}", x, y));
         return -1;
     }
 
@@ -279,15 +280,16 @@ public class LocationManger : MonoBehaviour
         return true;
     }
 
-    public void BuildNewLandmark(string modelId, int copyN)
+    public void BuildNewLandmark(string modelId, int copyN, Price _buildPrice)
     {
         if (settingMode) return; //building mode ongoing..
 
         GameObject originalObj = FindAvailableObj(modelId);
+        buildPrice = _buildPrice;
 
-        if(originalObj == null)
+        if (originalObj == null)
         {
-            print("[LocationManager : BuildNewLandmark] Can't find modelId : " + modelId);
+            ////print("[LocationManager : BuildNewLandmark] Can't find modelId : " + modelId);
             return;
         }
 
@@ -324,7 +326,7 @@ public class LocationManger : MonoBehaviour
         int x = locations[idx].x;
         int y = locations[idx].y;
 
-        print(string.Format("x : {0}, y : {1}", x, y));
+        ////print(string.Format("x : {0}, y : {1}", x, y));
 
         int width = targetW;
         int height = targetH;
@@ -350,7 +352,7 @@ public class LocationManger : MonoBehaviour
             //Wrong Position
             targetAvialable = false;
             finishBtn.GetComponent<Button>().interactable = false;
-            print(string.Format("[LocationManager: LocationMarkClicked] Cannot Place in that location. x : {0} y : {1}", x, y));
+            ////print(string.Format("[LocationManager: LocationMarkClicked] Cannot Place in that location. x : {0} y : {1}", x, y));
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
@@ -438,18 +440,19 @@ public class LocationManger : MonoBehaviour
                 break;
 
         }
-        print(direction);
+        ////print(direction);
     }
 
     public void FinishBuilBtnPressed()
     {
         if(!targetAvialable)
         {
-            print("[FinishBuilBtnPressed] targetAvialable = false");
+            //////print("[FinishBuilBtnPressed] targetAvialable = false");
             return;
         }
 
         AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.buildComplete);
+        MoneyUI.Instance.SubtractMoney(buildPrice);
 
         upBtn.SetActive(false);
         rightBtn.SetActive(false);
@@ -470,7 +473,7 @@ public class LocationManger : MonoBehaviour
 
     public void MoveBtnClicked(GameObject target)
     {
-        print("MoveBtnClicked");
+        buildPrice = new Price(0);
         moveMode = true;
         settingMode = true;
         targetObj = target;
@@ -499,7 +502,7 @@ public class LocationManger : MonoBehaviour
         buildBtnSet.SetActive(true);
 
         touchCountDelta = -1;
-        print(string.Format("X : {0} Y : {1} idx : {2}", targetX, targetY, GetLocationIdx(targetX, targetY)));
+        //////print(string.Format("X : {0} Y : {1} idx : {2}", targetX, targetY, GetLocationIdx(targetX, targetY)));
         LocationMarkClicked(GetLocationIdx(targetX, targetY));
     }
 
@@ -544,7 +547,7 @@ public class LocationManger : MonoBehaviour
 
         if (w != obj.GetComponent<LocationObject>().width | h!= obj.GetComponent<LocationObject>().height)
         {
-            print(string.Format("[LocationManager : AllocateLandmark] Failed to allocate. W/H dismathced. w : {0}, h : {1}", w, h));
+            //////print(string.Format("[LocationManager : AllocateLandmark] Failed to allocate. W/H dismathced. w : {0}, h : {1}", w, h));
             return; 
         }
          
@@ -619,7 +622,7 @@ public class LocationManger : MonoBehaviour
         
         if (newLandmark == null)
         {
-            print("[LocationManager : LevelUPLandmark] Can't find LVUP model of : " + landmark.name);
+            ////print("[LocationManager : LevelUPLandmark] Can't find LVUP model of : " + landmark.name);
             return null;
         }
 
@@ -649,7 +652,7 @@ public class LocationManger : MonoBehaviour
 
         if(landmarkItem == null)
         {
-            print("[LocationManger - FindAvailableObj] Cannot find obj. modelID = " + modelID);
+            ////print("[LocationManger - FindAvailableObj] Cannot find obj. modelID = " + modelID);
             return null;
         }
 
@@ -682,7 +685,7 @@ public class LocationManger : MonoBehaviour
 
         if (originalObj == null)
         {
-            print("[LocationManager : BuildNewLandmark] Can't find modelId : " + objData.modelId);
+            ////print("[LocationManager : BuildNewLandmark] Can't find modelId : " + objData.modelId);
             return;
         }
 
