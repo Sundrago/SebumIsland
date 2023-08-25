@@ -43,6 +43,7 @@ public class DebugCtrl : MonoBehaviour
         foreach(GameObject obj in LocationManger.Instance.allocatedObj)
         {
             obj.GetComponent<Landmark>().buildCompleteTime = System.DateTime.Now;
+            //obj.GetComponent<LocationObjData>().buildCompleteTime = System.DateTime.Now;
         }
     }
 

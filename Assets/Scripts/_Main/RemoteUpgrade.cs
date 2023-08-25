@@ -38,6 +38,7 @@ public class RemoteUpgrade : MonoBehaviour
         for(int i = 0; i<allocatedObj.Count; i++) {
             LocationObject location = allocatedObj[i].GetComponent<LocationObject>();
             if (location == null) continue;
+            if (location.GetComponent<Landmark>().buildCompleteTime > System.DateTime.Now) continue;
             Price upgradePrice = location.GetUpgradePrice();
 
             if( (lowPrice.idx > upgradePrice.idx) || (lowPrice.idx == upgradePrice.idx && lowPrice.amount > upgradePrice.amount)) {
@@ -85,8 +86,19 @@ public class RemoteUpgrade : MonoBehaviour
     } 
 
     public void UpgradeBtnClicked() {
-        if(locationObject == null) return;
-        if(!money.SubtractMoney(locationObject.GetUpgradePrice())) return;
+        if (locationObject == null)
+        {
+            GetAvailableUpgrades();
+            return;
+        }
+
+        if (locationObject.GetComponent<Landmark>().buildCompleteTime > System.DateTime.Now)
+        {
+            GetAvailableUpgrades();
+            return;
+        }
+
+        if (!money.SubtractMoney(locationObject.GetUpgradePrice())) return;
         
         if(locationObject.ReadyForLevelUp()) {
             locationManger.LevelUPLandmark(locationObject.gameObject);
@@ -104,7 +116,7 @@ public class RemoteUpgrade : MonoBehaviour
         gameObject.transform.DOShakeScale(0.3f);
 
         //Instantiate particle
-        FXManager.Instance.CreateFX(FXType.UpgradeParticleFX, locationObject.gameObject.transform);
+        FXManager.Instance.CreateFX(FXType.UpgradeParticleFX, locationObject.gameObject.transform, locationObject.width == 2 ? 4f : 5.5f);
 
         //tutorial 05
         QuestTutorialManager.Instance.Addfarm0UpdateCount();
@@ -131,5 +143,12 @@ public class RemoteUpgrade : MonoBehaviour
             landmark_icon.color = color_notAvailable;
             lvUp_icon.color = color_notAvailable;
         }
+    }
+
+    private void Update()
+    {
+        if (Time.frameCount % 60 != 0) return;
+        GetAvailableUpgrades();
+        return;
     }
 }

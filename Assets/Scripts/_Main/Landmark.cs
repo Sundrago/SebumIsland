@@ -6,7 +6,7 @@ using Sirenix.OdinInspector;
 
 public class Landmark : MonoBehaviour
 {
-    [GUIColor(0.4f, 0.8f, 0.8f, 1f), Required, SerializeField]
+    [ReadOnly]
     public string ID;
     //public int placeID;
     [GUIColor(0.4f, 0.8f, 0.8f, 1f), Required, SerializeField]

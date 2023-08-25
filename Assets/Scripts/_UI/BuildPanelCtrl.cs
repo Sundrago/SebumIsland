@@ -24,7 +24,8 @@ public class BuildPanelCtrl : MonoBehaviour
 
         foreach (LandmarkItem landmarkItem in InfoDataManager.Instance.LandmarkItems)
         {
-            if (CSVReader.Instance.GetDataList(landmarkItem.ID) == null) return;
+            if (!landmarkItem.ShowOnBuildPanel) continue;
+            if (CSVReader.Instance.GetDataList(landmarkItem.ID) == null) continue;
             BuildBtnSet buildBtn = Instantiate(buildBtnSet_prefab, btnsHolder.transform);
             Vector2 buildBtnPos = buildBtnSet_prefab.GetComponent<RectTransform>().anchoredPosition;
             buildBtnPos.y -= row_height * buildBtnSets.Count;

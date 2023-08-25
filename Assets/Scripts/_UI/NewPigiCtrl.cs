@@ -21,7 +21,7 @@ public class NewPigiCtrl : MonoBehaviour
         PlayerPrefs.SetInt(id + "_count", PlayerPrefs.GetInt(id + "_count") + 1);
         //print("피지획득 | " + id + " | " + PlayerPrefs.GetInt(id + "_count"));
 
-        if(id == "pigi_default")
+        if(id == "pigi_farm0")
         {
             QuestTutorialManager.Instance.AddBasicPigiCount();
         }

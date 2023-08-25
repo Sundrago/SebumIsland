@@ -63,7 +63,7 @@ public class FXManager : MonoBehaviour
         }
     }
 
-    public FX CreateFX(FXType fXType, Transform target = null)
+    public FX CreateFX(FXType fXType, Transform target = null, float sizeMultiplier = -1f)
     {
         ObjectPool<FX> pool = GetObjectPoolByFxType(fXType);
 
@@ -74,6 +74,7 @@ public class FXManager : MonoBehaviour
         }
 
         FX fx = pool.Get();
+        if(sizeMultiplier!=-1f) fx.transform.localScale = Vector3.one * sizeMultiplier;
         fx.InitAndPlayFX(target, fXType);
         return fx;
     }

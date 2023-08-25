@@ -12,6 +12,7 @@ public class Btn_hold : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     private void Update()
     {
         if (!mouseDown) return;
+        if (gameObject.GetComponent<Button>().interactable == false) return;
 
         if (startTime + 0.5f > Time.time) return;
         else if(startTime + 2f > Time.time)
