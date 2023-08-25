@@ -82,7 +82,9 @@ public class MoneyUI : MonoBehaviour
     public static MoneyUI Instance;
     public List<Price> balcance = new List<Price>();
     [SerializeField] public TextMeshProUGUI moneyText;
-
+    [SerializeField] RemoteUpgrade remoteUpgrade;
+    [SerializeField] BuildPanelCtrl buildPanelCtrl;
+ 
     private void Awake()
     {
         Instance = this;
@@ -156,6 +158,7 @@ public class MoneyUI : MonoBehaviour
         balcance[money_idx].amount += myPrice.amount;
         CheckIfExceed(money_idx);
         UpdateUI();
+        SetBtnAvailabilty();
     }
 
     private void CheckIfExceed(int idx)
@@ -177,6 +180,7 @@ public class MoneyUI : MonoBehaviour
         balcance[price.idx].amount -= price.amount;
         CheckIfShort(price.idx);
         UpdateUI();
+        SetBtnAvailabilty();
         return true;
     }
 
@@ -218,5 +222,11 @@ public class MoneyUI : MonoBehaviour
     {
         balcance = new List<Price>();
         UpdateUI();
+    }
+
+    private void SetBtnAvailabilty()
+    {
+        remoteUpgrade.GetAvailableUpgrades();
+        buildPanelCtrl.GetAvailableUpgrades();
     }
 }

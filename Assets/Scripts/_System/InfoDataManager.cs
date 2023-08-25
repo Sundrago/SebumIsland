@@ -93,6 +93,9 @@ public class LandmarkItem
     [VerticalGroup("ID"), LabelWidth(50)]
     public GameObject prefab;
 
+    [VerticalGroup("ID"), LabelWidth(150)]
+    public bool ShowOnBuildPanel;
+
     [ReadOnly]
     [VerticalGroup("Localized Info"), LabelWidth(50)]
     public string Name, Descr;

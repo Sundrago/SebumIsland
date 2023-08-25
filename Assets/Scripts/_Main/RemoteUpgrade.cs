@@ -13,11 +13,23 @@ public class RemoteUpgrade : MonoBehaviour
 {
     [SerializeField] LocationManger locationManger;
     [SerializeField] MoneyUI money;
-
     [SerializeField] TextMeshProUGUI short_title, short_upgCount, short_price, short_upgName;
 
+    [SerializeField] Image btn_bg, btn_frame, landmark_icon, lvUp_icon;
+
+    Color color_notAvailable = new Color(0.8f, 0.8f, 0.8f, 0.5f);
+    Color color_Available = new Color(1, 1, 1, 1);
+
     private LocationObject locationObject = null;
-    
+
+    private void Start()
+    {
+        btn_bg.color = color_notAvailable;
+        btn_frame.gameObject.SetActive(false);
+        lvUp_icon.gameObject.SetActive(false);
+        landmark_icon.gameObject.SetActive(false);
+    }
+
     public void GetAvailableUpgrades() {
         List<GameObject> allocatedObj = locationManger.allocatedObj;
         Price lowPrice = new Price(0, "z");
@@ -40,6 +52,12 @@ public class RemoteUpgrade : MonoBehaviour
             short_price.text = "";
             short_upgCount.text = "";
             short_upgName.text = "";
+
+            //set btns
+            btn_bg.color = color_notAvailable;
+            btn_frame.gameObject.SetActive(false);
+            lvUp_icon.gameObject.SetActive(false);
+            landmark_icon.gameObject.SetActive(false);
             return;
         }
 
@@ -53,8 +71,17 @@ public class RemoteUpgrade : MonoBehaviour
             short_upgName.text = "레벨업!";
         } else short_upgName.text = "";
 
+
+        //set btns
+        landmark_icon.sprite = InfoDataManager.Instance.GetLandmarkItemByID(landmark.GetComponent<LocationObject>().modelID).Img;
+        btn_frame.gameObject.SetActive(true);
+        lvUp_icon.gameObject.SetActive(true);
+        landmark_icon.gameObject.SetActive(true);
+
         //Has enoguh money
         gameObject.GetComponent<Button>().interactable = money.HasEnoughMoney(locationObject.GetUpgradePrice());
+
+        SetBtnActive();
     } 
 
     public void UpgradeBtnClicked() {
@@ -89,10 +116,20 @@ public class RemoteUpgrade : MonoBehaviour
         return LocalizationSettings.StringDatabase.GetLocalizedString(table, name);
     }
 
-    void Update()
+    public void SetBtnActive()
     {
-        if(Time.frameCount % 60 == 0) {
-            GetAvailableUpgrades();
+        if(money.HasEnoughMoney(locationObject.GetUpgradePrice()))
+        {
+            btn_bg.color = color_Available;
+            btn_frame.color = color_Available;
+            landmark_icon.color = color_Available;
+            lvUp_icon.color = color_Available;
+        } else
+        {
+            btn_bg.color = color_notAvailable;
+            btn_frame.color = color_notAvailable;
+            landmark_icon.color = color_notAvailable;
+            lvUp_icon.color = color_notAvailable;
         }
     }
 }

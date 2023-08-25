@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using DG.Tweening;
 
 public class BuildPanelCtrl : MonoBehaviour
@@ -8,11 +9,16 @@ public class BuildPanelCtrl : MonoBehaviour
     [SerializeField] BuildBtnSet buildBtnSet_prefab;
     [SerializeField] float row_height = 140f;
     [SerializeField] GameObject btnsHolder;
+    [SerializeField] Image buildBtn;
+
     private bool initiated = false;
     private List<BuildBtnSet> buildBtnSets;
+    MoneyUI money;
 
     private async void Initiate()
     {
+        money = MoneyUI.Instance;
+
         buildBtnSets = new List<BuildBtnSet>();
         initiated = true;
 
@@ -34,24 +40,30 @@ public class BuildPanelCtrl : MonoBehaviour
     private void OnEnable()
     {
         if (!initiated) Initiate();
-        else UpdateBtns();
+
+        GetAvailableUpgrades();
     }
 
-    private void UpdateBtns()
+    public void GetAvailableUpgrades()
     {
+        if (!initiated) Initiate();
+        bool flag = false;
         foreach (BuildBtnSet buildBtn in buildBtnSets)
         {
             buildBtn.UpdateBuildBtn();
+            if (money.HasEnoughMoney(buildBtn.price)) flag = true;
         }
+
+        buildBtn.color = flag ? Color.white : new Color(1, 1, 1, 0.5f);
     }
 
-    private void Update()
-    {
-        if(Time.frameCount % 60 == 0)
-        {
-            UpdateBtns();
-        }
-    }
+    //private void Update()
+    //{
+    //    if (Time.frameCount % 60 == 0)
+    //    {
+    //        GetAvailableUpgrades();
+    //    }
+    //}
 
     public void OpenPanel()
     {
@@ -87,4 +99,6 @@ public class BuildPanelCtrl : MonoBehaviour
             .SetEase(Ease.OutBack)
             .OnComplete(() => gameObject.SetActive(false));
     }
+
+
 }
