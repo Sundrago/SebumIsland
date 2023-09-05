@@ -34,6 +34,7 @@ public class DebugCtrl : MonoBehaviour
     public void Debug_newPigiAnim()
     {
         GameObject anim = Instantiate(newPigiAnim, gameObject.transform.parent.transform);
+        AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.newPigiFound);
         anim.GetComponent<NewPigiAnim>().StartAnim();
         anim.SetActive(true);
     }

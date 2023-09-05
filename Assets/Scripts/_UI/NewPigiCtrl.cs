@@ -6,7 +6,7 @@ using UnityEngine.Localization.Settings;
 
 public class NewPigiCtrl : MonoBehaviour
 {
-    public GameObject newPigiAnim;
+    public NewPigiAnim newPigiAnim;
     public static NewPigiCtrl Instance;
 
     private void Awake()
@@ -37,13 +37,11 @@ public class NewPigiCtrl : MonoBehaviour
             return;
         }
 
-        GameObject anim = Instantiate(newPigiAnim, gameObject.transform);
-        anim.GetComponent<NewPigiAnim>().img.GetComponent<Image>().sprite = pigiItem.Img;
-        anim.GetComponent<NewPigiAnim>().pigi_title.text = GetLocalizedString("Pigi","title_" + id);
-        anim.GetComponent<NewPigiAnim>().StartAnim();
-        anim.SetActive(true);
+        NewPigiAnim anim = Instantiate(newPigiAnim, gameObject.transform);
+        anim.img.sprite = pigiItem.Img;
+        anim.pigi_title.text = GetLocalizedString("Pigi","title_" + id);
+        anim.StartAnim();
         gameObject.SetActive(true);
-
         AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.newPigiFound);
     }
 

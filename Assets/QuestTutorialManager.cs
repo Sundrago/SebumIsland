@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -20,6 +21,9 @@ public class QuestTutorialManager : MonoBehaviour
 
     [SerializeField] GameObject hand, particleFX;
 
+    [TableList(ShowIndexLabels = true)]
+    public List<QuestData> questDatas;
+    
     int state;
     int tearsCount, tearsMaxCount = 0;
     bool completed;
@@ -365,4 +369,54 @@ public class QuestTutorialManager : MonoBehaviour
 
     /* ------------------------------------------------------------------------ */
 
+}
+
+[Serializable]
+public class QuestData
+{
+    [VerticalGroup("Strings")]
+    [LabelWidth(50)]
+    public string Descr;
+    
+    [VerticalGroup("Quest")]
+    [LabelText("type"), LabelWidth(30)]
+    public QuestType questType;
+    
+    [VerticalGroup("Quest")]
+    [LabelText("amt"), LabelWidth(30)]
+    [DisableIf("questType", QuestType.Custom)]
+    public int questamt;
+    
+    [VerticalGroup("Quest")]
+    [LabelText("ID"), LabelWidth(30)]
+    public String quesetID;
+
+    [VerticalGroup("Reward")]
+    [LabelText("type"), LabelWidth(30)]
+    public RewardType rewardType;
+    
+    [VerticalGroup("Reward")]
+    [LabelText("amt"), LabelWidth(30)]
+    public int rewardAmt;
+    
+    [VerticalGroup("Reward")]
+    [DisableIf("@this.rewardType == RewardType.jewel || this.rewardType == RewardType.oil")]
+    [LabelText("ID"), LabelWidth(30)]
+    public string reardID;
+
+    [VerticalGroup("Strings")]
+    [TableList]
+    public List<BalloonMsgData> EndString;
+}
+
+public enum QuestType { CollectPigi, BuildLandmark, CollectMoney, Upgrade, Custom }
+public enum RewardType { money, jewel, oil }
+
+[Serializable]
+public class BalloonMsgData
+{
+    [HorizontalGroup(Width = 0.25f), HideLabel]
+    public String ID = "default";
+    [HorizontalGroup, HideLabel]
+    public String Descr;
 }
