@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 using UnityEngine.EventSystems;
 
 /*
@@ -170,6 +171,11 @@ public class LocationManger : MonoBehaviour
                 mark.transform.Find("LOCATION_MARK").gameObject.GetComponent<LocationMarkTouchEvent>().idx = locations.Count;
                 Location location = new Location(x, y,mark,locations.Count);
                 locations.Add(location);
+
+                mark.transform.DOLocalMoveY(-10f, 1.5f)
+                    .SetDelay((i+1) * (j+1) / 150f)
+                    .From()
+                    .SetEase(Ease.OutCubic);
             }
         }
     }

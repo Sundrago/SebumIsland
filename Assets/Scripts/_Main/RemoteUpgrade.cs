@@ -40,6 +40,7 @@ public class RemoteUpgrade : MonoBehaviour
             if (location == null) continue;
             if (location.GetComponent<Landmark>().buildCompleteTime > System.DateTime.Now) continue;
             Price upgradePrice = location.GetUpgradePrice();
+            if(upgradePrice.amount == -1) continue;
 
             if( (lowPrice.idx > upgradePrice.idx) || (lowPrice.idx == upgradePrice.idx && lowPrice.amount > upgradePrice.amount)) {
                 lowPrice = upgradePrice;
@@ -97,7 +98,7 @@ public class RemoteUpgrade : MonoBehaviour
             GetAvailableUpgrades();
             return;
         }
-
+        
         if (!money.SubtractMoney(locationObject.GetUpgradePrice())) return;
         
         if(locationObject.ReadyForLevelUp()) {
@@ -106,7 +107,10 @@ public class RemoteUpgrade : MonoBehaviour
         } 
 
         locationObject.upgradeStatus += 1;
+        
         GetAvailableUpgrades();
+        if(locationObject == null) return;
+        
         locationObject.gameObject.GetComponent<Landmark>().UpdateData();
 
         AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.upgrade);

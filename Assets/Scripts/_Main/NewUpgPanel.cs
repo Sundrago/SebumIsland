@@ -144,7 +144,7 @@ public class NewUpgPanel : MonoBehaviour
             }
 
             // Deactivate if not enough money
-            if(Time.frameCount % 15 == 0) {
+            if(Time.frameCount % 30 == 0) {
                 CheckEnoughMoney();
             }
         }
@@ -154,6 +154,12 @@ public class NewUpgPanel : MonoBehaviour
     private void CheckEnoughMoney() {
         if(targetLandmark == null) return;
 
+        if (targetLandmark.GetComponent<Landmark>().isBuilding)
+        {
+            upgrade_btn_ui.GetComponent<Button>().interactable = false;
+            return;
+        }
+        
         if(locationObject.upgradeStatus == locationObject.maxUpdateIdx - 1) {
             if(locationObject.levelUpTime == -1) {
                 upgrade_btn_ui.GetComponent<Button>().interactable = false;
@@ -164,6 +170,7 @@ public class NewUpgPanel : MonoBehaviour
         } else {
             upgrade_btn_ui.GetComponent<Button>().interactable = money.HasEnoughMoney(levelUpPrice);
         }
+        
     }
 
     public void MoveBtnClicked()

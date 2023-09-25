@@ -1,16 +1,18 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using Sirenix.OdinInspector;
+using Random = System.Random;
 
 public class Landmark : MonoBehaviour
 {
     [ReadOnly]
     public string ID;
     //public int placeID;
-    [GUIColor(0.4f, 0.8f, 0.8f, 1f), Required, SerializeField]
-    private string pigiID;
+    [GUIColor(0.4f, 0.8f, 0.8f, 1f), Required, SerializeField, TableList]
+    private PigiSpawnData[] pigiSpawnDatas;
 
     [GUIColor(0.7f, 0.8f, 0.8f, 1f)]
     public List<Transform> growSpots = new List<Transform>();
@@ -57,7 +59,6 @@ public class Landmark : MonoBehaviour
         started = true;
 
         harvestAllCtrl = HarvestAllCtrl.Instance;
-        if (pigiID == "") pigiID = "pigi_default";
 
         //Load Data from locationObj.
         locationObject = gameObject.GetComponent<LocationObject>();
@@ -123,10 +124,34 @@ public class Landmark : MonoBehaviour
             }
         }
 
+
+        float totalWeight = 0;
+        foreach (PigiSpawnData data in pigiSpawnDatas)
+        {
+            data.minWeightRatio = totalWeight;
+            totalWeight += data.weightRatio;
+            data.maxWeightRatio = totalWeight;
+        }
+        
         for(int i = pigis.Count; i<amount; i++)
         {
+            float random = UnityEngine.Random.Range(0f, totalWeight);
+
+            string pigiID = "pigi_default";
+            float multiplier = 1f;
+            
+            foreach (PigiSpawnData data in pigiSpawnDatas)
+            {
+                if (random >= data.minWeightRatio && random < data.maxWeightRatio)
+                {
+                    pigiID = data.ID;
+                    multiplier = data.multiplier;
+                    break;
+                }
+            }
+            
             GameObject newPigi = Instantiate(InfoDataManager.Instance.GetPigiItemByID(pigiID).prefab, gameObject.transform);
-            newPigi.GetComponentInChildren<PigiCtrl>().Init(this, pos[i], pigiID);
+            newPigi.GetComponentInChildren<PigiCtrl>().Init(this, pos[i], pigiID, multiplier);
             pigis.Add(newPigi);
         }
 
@@ -225,5 +250,18 @@ public class Landmark : MonoBehaviour
             guideText.gameObject.SetActive(false);
             SetupPigi();
         }
+    }
+
+    [Serializable]
+    class PigiSpawnData
+    {
+        public string ID = "pigi_default";
+        public float weightRatio = 1f;
+        public float multiplier = 1f;
+
+        [ReadOnly]
+        public float minWeightRatio;
+        [ReadOnly]
+        public float maxWeightRatio;
     }
 }

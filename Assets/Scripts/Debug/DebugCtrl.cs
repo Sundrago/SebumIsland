@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MyUtility;
 
 public class DebugCtrl : MonoBehaviour
 {
     public MoneyUI money;
     public GameObject newPigiAnim;
     [SerializeField] Skybox2D_Manager skybox;
+    [SerializeField] Coin2DAnimationManager coin2DAnimationManager;
 
     public void Debug_ToggleDebugPanel()
     {
@@ -51,5 +53,23 @@ public class DebugCtrl : MonoBehaviour
     public void ChangeBG()
     {
         skybox.DebugChangeMood();
+    }
+
+    public void Debug_AddOil(int amount)
+    {
+        coin2DAnimationManager.AddCoin(CoinType.Oil, Vector3.zero, 250f, 5);
+        money.AddGemOil(CoinType.Oil, amount);
+    }
+    
+    public void Debug_AddGem(int amount)
+    {
+        coin2DAnimationManager.AddCoin(CoinType.Gem, Vector3.zero, 250f, 5);
+        money.AddGemOil(CoinType.Gem, amount);
+    }
+
+    public void Debug_LocaleTest()
+    {
+        string input = "[abc] hello world!";
+        print(Localize.GetLocalizedString(input));
     }
 }

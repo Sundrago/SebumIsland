@@ -30,11 +30,11 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
     private bool harvested = false;
     private bool pop = false;
 
+    private MoneyUI money;
+
+    private float bonusMultiplier = 1f;
     private System.DateTime startTime;
     private System.TimeSpan timeSpan;
-
-
-
     private NewPigiCtrl newPigiCtrl;
     private Animator animator;
 
@@ -50,18 +50,20 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
         newPigiCtrl = NewPigiCtrl.Instance;
         animator = gameObject.GetComponent<Animator>();
         
+        money = MoneyUI.Instance;
         mainCamera = GameObject.Find("Main Camera"); //Main Camera
         coin2d = GameObject.Find("UI-CANVAS"); //UI-CANVAS
 
         StartTimer();
     }
 
-    public void Init(Landmark _landmark, Vector3 _pos, string _ID)
+    public void Init(Landmark _landmark, Vector3 _pos, string _ID, float _bonusMultiplier = 1f)
     {
         ID = _ID;
         landmark = _landmark;
         gameObject.transform.parent.gameObject.transform.localPosition = _pos;
         gameObject.transform.parent.gameObject.SetActive(true);
+        bonusMultiplier = _bonusMultiplier;
         Set2DOBJ(0);
     }
 
@@ -146,8 +148,10 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
     {
         newPigiCtrl.GotPigi(ID);
         if (!showCoin) return;
-        coin2d.GetComponent<CoinAnimation2D>().Addcoin(3, Camera.main.WorldToScreenPoint(gameObject.transform.position));
-        Camera.main.GetComponent<MoneyUI>().AddMoney(landmark.sellPrice);
+        money.AddCoin2D(3, Camera.main.WorldToScreenPoint(gameObject.transform.position));
+
+        Price price = new Price(Mathf.RoundToInt(landmark.sellPrice.amount * bonusMultiplier), landmark.sellPrice.charCode);
+        money.AddMoney(price);
         harvested = false;
     }
 

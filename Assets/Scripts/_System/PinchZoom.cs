@@ -4,59 +4,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 
-//public class CameraTransition
-//{
-//    public bool onTransition = false;
-//    Vector3 startPosition;
-//    Vector3 endPosition;
-//    float startSize;
-//    float endSize;
-//    float startTime, endTime;
-
-
-
-//    public void Setup(Vector3 start_pos, Vector3 end_pos, float start_size, float end_size, float duration)
-//    {
-//        onTransition = true;
-//        startPosition = start_pos;
-//        endPosition = end_pos;
-//        startSize = start_size;
-//        endSize = end_size;
-//        startTime = Time.time;
-//        endTime = startTime + duration;
-//    }
-
-//    public void Update(Camera cam)
-//    {
-//        if (!onTransition) return;
-//        if(Time.time >= endTime)
-//        {
-//            onTransition = false;
-//            return;
-//        }
-
-//        float normal = Mathf.Abs((Time.time - startTime) / (endTime - startTime));
-//        normal = EaseOutCirc(normal);
-
-//        cam.transform.position = Vector3.Lerp(startPosition, endPosition, normal);
-//        cam.orthographicSize = Mathf.Lerp(startSize, endSize, normal);
-//    }
-
-//    float EaseOutCirc(float x){
-//        return Mathf.Sqrt(1 - Mathf.Pow(x - 1, 2));
-//    }
-//}
-
 public class PinchZoom : MonoBehaviour
 {
     const float orthoZoomSpeed = 0.05f;
     const float camMoveSpeed = 0.001f;
 
     [SerializeField] GameObject settings, collection, build;
-
-    //public CameraTransition camTrans = new CameraTransition();
+    
     public NewUpgPanel upgradePanel;
-    public PigiInfoPanel pigiInfoPanel;
+    // public PigiInfoPanel pigiInfoPanel;
     public bool onMoveLandmark = false;
     public Slider zoomSlider;
 
@@ -77,7 +33,6 @@ public class PinchZoom : MonoBehaviour
 
     private void Start()
     {
-        //Application.targetFrameRate = 60;
         targetPosition = Camera.main.transform.position;
         targetSize = Camera.main.orthographicSize;
         SetSliderValue();
@@ -90,7 +45,6 @@ public class PinchZoom : MonoBehaviour
 
         if (Vector3.Distance(targetPosition, Camera.main.transform.position) > 0.1f)
         {
-            //print(Camera.main.transform.position);
             Vector3 tempPos = Camera.main.transform.position;
             tempPos += (targetPosition - tempPos) * 0.25f;
             Camera.main.transform.position = tempPos;
@@ -135,17 +89,17 @@ public class PinchZoom : MonoBehaviour
                     if (hit.collider.gameObject.tag == "UI") return;
                 }
 
-                foreach (RaycastHit hit in hits)
-                {
-                    if (hit.collider.gameObject.tag == "pigi")
-                    {
-                        //Open Pigi info Panel
-                        pigiInfoPanel.OpenPanel(hit.collider.gameObject);
-                        StartCamTransition(hit.collider.gameObject.transform.position, 6f);
-                        myTouchCount = 0;
-                        return;
-                    }
-                }
+                // foreach (RaycastHit hit in hits)
+                // {
+                //     if (hit.collider.gameObject.tag == "pigi")
+                //     {
+                //         //Open Pigi info Panel
+                //         pigiInfoPanel.OpenPanel(hit.collider.gameObject);
+                //         StartCamTransition(hit.collider.gameObject.transform.position, 6f);
+                //         myTouchCount = 0;
+                //         return;
+                //     }
+                // }
                 foreach (RaycastHit hit in hits)
                 {
                     if (hit.collider.gameObject.tag == "landmark")
@@ -171,30 +125,9 @@ public class PinchZoom : MonoBehaviour
 
             touchZero = Input.GetTouch(0);
 
-            //// Touch Event Handler
-            //var objects = GameObject.FindGameObjectsWithTag("pigi");
-            //float[] dists = new float[objects.Length];
-            //float minDist = float.MaxValue;
-            //int minIdx = -1;
-
-            //for(int i = 0; i<objects.Length; i++)
-            //{
-            //    GameObject obj = objects[i];
-            //    Debug.DrawLine(Camera.main.WorldToScreenPoint(obj.transform.position), touchZero.position, Color.red, 0.1f);
-            //    dists[i] = Vector2.Distance(Camera.main.WorldToScreenPoint(obj.transform.position), touchZero.position);
-            //    if(dists[i] < minDist)
-            //    {
-            //        minDist = dists[i];
-            //        minIdx = i;
-            //    }
-            //}
-
             line.SetPosition(0, Camera.main.ScreenToWorldPoint(touchZero.position));
-            //objects[minIdx].transform.position
             if (targetPigi != null)
             {
-                //line.SetPosition(0, Camera.main.ScreenToWorldPoint(new Vector3(touchZero.position.x, touchZero.position.y, targetPigi.transform.position.z)));
-                //line.SetPosition(1, targetPigi.transform.position);
                 float newY = Camera.main.ScreenToWorldPoint(new Vector3(touchZero.position.x, touchZero.position.y, targetPigi.transform.position.z)).y;
 
                 Vector3 objPos = targetPigi.transform.position;
@@ -218,9 +151,8 @@ public class PinchZoom : MonoBehaviour
                 }
             }
 
-            Debug.DrawLine(touchZero.position - new Vector2(touchTolerance, touchTolerance), touchZero.position + new Vector2(touchTolerance, touchTolerance), Color.yellow, 0.1f);
-            Debug.DrawLine(touchZero.position - new Vector2(touchTolerance, - touchTolerance), touchZero.position + new Vector2(touchTolerance, - touchTolerance), Color.yellow, 0.1f);
-            //
+            // Debug.DrawLine(touchZero.position - new Vector2(touchTolerance, touchTolerance), touchZero.position + new Vector2(touchTolerance, touchTolerance), Color.yellow, 0.1f);
+            // Debug.DrawLine(touchZero.position - new Vector2(touchTolerance, - touchTolerance), touchZero.position + new Vector2(touchTolerance, - touchTolerance), Color.yellow, 0.1f);
 
             if (myTouchCount == 0)
             {

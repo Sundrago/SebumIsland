@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.PlayerLoop;
 
 public class Price
 {
@@ -81,10 +82,14 @@ public class MoneyUI : MonoBehaviour
 {
     public static MoneyUI Instance;
     public List<Price> balcance = new List<Price>();
-    [SerializeField] public TextMeshProUGUI moneyText;
+    [SerializeField] public TextMeshProUGUI moneyText, gemText, oilText;
     [SerializeField] RemoteUpgrade remoteUpgrade;
     [SerializeField] BuildPanelCtrl buildPanelCtrl;
- 
+    [SerializeField]
+    private Coin2DAnimationManager coin2D;
+    private int gemAmount = 0;
+    private int oilAmount = 0;
+    
     private void Awake()
     {
         Instance = this;
@@ -116,8 +121,10 @@ public class MoneyUI : MonoBehaviour
                     if (i == 0) moneyText.text = GetMyBalance().GetString();
                 }
             }
-
         if (balcance.Count == 0) moneyText.text = "0a";
+
+        oilText.text = oilAmount.ToString();
+        gemText.text = gemAmount.ToString();
     }
 
     string ConvertIntToCode(int idx)
@@ -159,6 +166,60 @@ public class MoneyUI : MonoBehaviour
         CheckIfExceed(money_idx);
         UpdateUI();
         SetBtnAvailabilty();
+    }
+
+    public void AddGemOil(CoinType coinType, int amount)
+    {
+        if(coinType == CoinType.Gem) 
+            gemAmount += amount;
+        else if (coinType == CoinType.Oil)
+            oilAmount += amount;
+        UpdateUI();
+    }
+
+    public bool HasEnoughGemOil(CoinType coinType, int amount)
+    {
+        if (coinType == CoinType.Gem)
+        {
+            if (gemAmount >= amount) return true;
+            return false;
+        } else if (coinType == CoinType.Oil)
+        {
+            if (oilAmount >= amount) return true;
+            return false;
+        }
+
+        return false;
+    }
+
+    public bool SubtractGemOil(CoinType coinType, int amount)
+    {
+        if (!HasEnoughGemOil(coinType, amount)) return false;
+        
+        if (coinType == CoinType.Gem)
+        {
+            gemAmount -= amount;
+            return true;
+        } else if (coinType == CoinType.Oil)
+        {
+            oilAmount -= amount;
+            return true;
+        }
+
+        return false;
+    }
+
+    public int GetMyGemOil(CoinType coinType)
+    {
+        if (coinType == CoinType.Gem) return gemAmount;
+        if (coinType == CoinType.Oil) return oilAmount;
+
+        return -1;
+    }
+
+    public void AddCoin2D(int count, Vector3 startPos)
+    {
+        coin2D.AddCoin(CoinType.Coin, startPos, 250f, count, 0.5f, 1.5f);
     }
 
     private void CheckIfExceed(int idx)

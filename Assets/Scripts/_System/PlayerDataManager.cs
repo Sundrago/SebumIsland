@@ -56,7 +56,15 @@ public class PlayerDataManager : MonoBehaviour
 		Price myBalance = money.GetMyBalance();
 		PlayerPrefs.SetInt("myBalanceAmount", myBalance.amount);
 		PlayerPrefs.SetString("myBalanceChar", myBalance.charCode);
+
+		int gemAmount = money.GetMyGemOil(CoinType.Gem);
+		int oilAmount = money.GetMyGemOil(CoinType.Oil);
+		PlayerPrefs.SetInt("gemAmount", gemAmount);
+		PlayerPrefs.SetInt("oilAmount", oilAmount);
+		
 		PlayerPrefs.Save();
+		
+		
 	}
 
 	[Button]
@@ -90,6 +98,21 @@ public class PlayerDataManager : MonoBehaviour
 			money.AddMoney(myBalance);
 			print("data loaded - balance : " + myBalance.GetString());
 		}
+		
+		if (PlayerPrefs.HasKey("gemAmount"))
+		{
+			int gemAmount = PlayerPrefs.GetInt("gemAmount");
+			money.AddGemOil(CoinType.Gem, gemAmount);
+			print("data loaded - gemAmount : " + gemAmount);
+		}
+		
+		if (PlayerPrefs.HasKey("oilAmount"))
+		{
+			int oilAmount = PlayerPrefs.GetInt("oilAmount");
+			money.AddGemOil(CoinType.Oil, oilAmount);
+			print("data loaded - oilAmount : " + oilAmount);
+		}
+		
 	}
 
 

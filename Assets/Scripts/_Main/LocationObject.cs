@@ -123,7 +123,12 @@ public class LocationObject : MonoBehaviour
             nextLandmark.GetComponent<LocationObject>().ReadCSV();
             levelUpPrice = nextLevel.buildPrice;
             levelUpTime = nextLevel.buildTime;
-        } else print("UpgradePanel : FAIL TO PARS nextLevelId");
+        }
+        else
+        {
+            nextLevelId = "";
+            print("UpgradePanel : FAIL TO PARS nextLevelId");
+        }
     }
 
     public bool ReadyForLevelUp() {
@@ -132,7 +137,9 @@ public class LocationObject : MonoBehaviour
     }
 
     public Price GetUpgradePrice() {
-        if(upgradeStatus >= maxUpdateIdx - 1) {
+        if(upgradeStatus >= maxUpdateIdx - 1)
+        {
+            if (nextLevelId == "") return new Price(-1); 
             return levelUpPrice;
         }
         return(data.data[upgradeStatus].price);
