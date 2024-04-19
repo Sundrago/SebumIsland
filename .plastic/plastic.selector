@@ -1,4 +1,0 @@
-repository "PIGI@SunDragon@cloud"
-  path "/"
-    br "/main"
-    co "/main"
