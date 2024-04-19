@@ -8,33 +8,58 @@ using DG.Tweening;
 using TMPro;
 using MyUtility;
 using UnityEditor;
+using UnityEngine.Serialization;
 
+public enum DialogueCharacterType { Princess, Prince, King, Hero, Heroin }
+public enum DialogueTransitionFX { FadeIn, }
+public enum ShowDirection { Left, Right }
+
+/// <summary>
+/// Represents a character in a dialogue.
+/// </summary>
+[Serializable]
+public class DialogueCharacter
+{
+    [HorizontalGroup]
+    public string name;
+    [HorizontalGroup]
+    public Sprite sprite;
+}
+
+/// <summary>
+/// Represents the data for a single dialogue in the game.
+/// </summary>
+public class DialogueData
+{
+    public ShowDirection ShowDirection;
+    public DialogueCharacterType dialogueCharacterType;
+    public string dialogueString;
+    public DialogueTransitionFX dialogueTransitionFX;
+
+    public DialogueData(ShowDirection _driection, DialogueCharacterType _dialogueCharacterType, string _dialogueString, DialogueTransitionFX dialogueTransitionFX = DialogueTransitionFX.FadeIn)
+    {
+        ShowDirection = _driection;
+        dialogueCharacterType = _dialogueCharacterType;
+        dialogueString = _dialogueString;
+        this.dialogueTransitionFX = dialogueTransitionFX;
+    }
+}
+
+
+/// <summary>
+/// Manages overall dialogue features in game.
+/// </summary>
 public class DialogueManager : SerializedMonoBehaviour
 {
-    // [SerializeField, TableList]
-    // private List<DialogueCharacter> dialogueCharacters;
-    
-    [SerializeField]
     public Dictionary <DialogueCharacterType, DialogueCharacter> dialogueCharacters;
+    [FormerlySerializedAs("dialogueUI")] [SerializeField] private DialogueUIController dialogueUIController;
 
-    [SerializeField]
-    private DialogueUI dialogueUI;
     private List<DialogueData> dialogueDatas;
     private int currentDialogueIdx = 0;
-
-    [Button]
+    
     public void StartTestDialogue()
     {
         List<DialogueData> datas = new List<DialogueData>();
-        
-        datas.Add(new DialogueData(Direction.Left, DialogueCharacterType.Prince, "안녕?"));
-        datas.Add(new DialogueData(Direction.Right, DialogueCharacterType.Princess, "안녕!?"));
-        datas.Add(new DialogueData(Direction.Left, DialogueCharacterType.Princess, "왼쪽!"));
-        datas.Add(new DialogueData(Direction.Right, DialogueCharacterType.Princess, "오른쪽!"));
-        datas.Add(new DialogueData(Direction.Left, DialogueCharacterType.King, "으갸갸갸갹"));
-        datas.Add(new DialogueData(Direction.Right, DialogueCharacterType.Hero, "난 히어로야"));
-        datas.Add(new DialogueData(Direction.Left, DialogueCharacterType.Heroin, "난 히로인이야"));
-        
         InitDialogue(datas);
     }
     
@@ -44,10 +69,9 @@ public class DialogueManager : SerializedMonoBehaviour
         currentDialogueIdx = 0;
         
         gameObject.SetActive(true);
-        dialogueUI.UpdateDialogueUI(dialogueDatas[0]);
+        dialogueUIController.UpdateDialogueUI(dialogueDatas[0]);
     }
-
-    [Button]
+    
     public void NextBtnClicked()
     {
         currentDialogueIdx += 1;
@@ -57,36 +81,8 @@ public class DialogueManager : SerializedMonoBehaviour
             return;
         }
         
-        dialogueUI.UpdateDialogueUI(dialogueDatas[currentDialogueIdx]);
+        dialogueUIController.UpdateDialogueUI(dialogueDatas[currentDialogueIdx]);
     }
-    public class DialogueData
-    {
-        public Direction direction;
-        public DialogueCharacterType dialogueCharacterType;
-        public string dialogueString;
-        public DialogueFX dialogueFX;
-
-        public DialogueData(Direction _driection, DialogueCharacterType _dialogueCharacterType, string _dialogueString, DialogueFX _dialogueFX = DialogueFX.FadeIn)
-        {
-            direction = _driection;
-            dialogueCharacterType = _dialogueCharacterType;
-            dialogueString = _dialogueString;
-            dialogueFX = _dialogueFX;
-        }
-    }
-
-    [Serializable]
-    public class DialogueCharacter
-    {
-        [HorizontalGroup]
-        public string name;
-        [HorizontalGroup]
-        public Sprite sprite;
-    }
-    
-    public enum Direction { Left, Right }
-    public enum DialogueFX { FadeIn, }
-    public enum DialogueCharacterType { Princess, Prince, King, Hero, Heroin }
 
 #if UNITY_EDITOR
     [Button]

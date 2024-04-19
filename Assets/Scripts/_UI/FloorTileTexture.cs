@@ -1,13 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+///     Represents a floor tile texture in a game.
+/// </summary>
 public class FloorTileTexture : MonoBehaviour
 {
-    [SerializeField] MeshRenderer a,b,c,d;
-    [SerializeField] GameObject sideA, sideB;
+    [SerializeField] private MeshRenderer a, b, c, d;
+    [SerializeField] private GameObject sideA, sideB;
 
-    public void SetSideMeshTexture(){
+    public void SetSideMeshTexture()
+    {
         a.material = gameObject.GetComponent<MeshRenderer>().material;
         b.material = gameObject.GetComponent<MeshRenderer>().material;
         c.material = gameObject.GetComponent<MeshRenderer>().material;
@@ -20,5 +22,4 @@ public class FloorTileTexture : MonoBehaviour
         sideA.SetActive(true);
         sideB.SetActive(true);
     }
-
 }

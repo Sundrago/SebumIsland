@@ -1,18 +1,29 @@
+using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Localization;
 using UnityEngine.Localization.Settings;
-using TMPro;
-using System;
 
-public enum LocaleCode { Korean, English, Japanese, ChineseSimplified, ChineseTraditional, Spanish };
+public enum LocaleCode
+{
+    Korean,
+    English,
+    Japanese,
+    ChineseSimplified,
+    ChineseTraditional,
+    Spanish
+}
+
+/// <summary>
+///     Manages the localization of the game.
+/// </summary>
 public class Localization : MonoBehaviour
 {
-    [SerializeField] TMP_FontAsset font_kr, font_jp, font_zh_simplified, font_zh_traditional, font_es;
+    [SerializeField] private TMP_FontAsset font_kr, font_jp, font_zh_simplified, font_zh_traditional, font_es;
 
     private void Start()
     {
-        //Get LocaleInfo from system language if first launch
-        if(!PlayerPrefs.HasKey("settings_localeCode"))
+        if (!PlayerPrefs.HasKey("settings_localeCode"))
         {
             LocaleCode localeCode;
 
@@ -60,26 +71,23 @@ public class Localization : MonoBehaviour
 
     public void LoadLocale()
     {
-        string localeCodeInString = PlayerPrefs.GetString("settings_localeCode");
+        var localeCodeInString = PlayerPrefs.GetString("settings_localeCode");
         print(localeCodeInString);
 
 
         //Change localizationSettings
-        LocaleIdentifier localeCode = new LocaleIdentifier(localeCodeInString);
-        for (int i = 0; i < LocalizationSettings.AvailableLocales.Locales.Count; i++)
+        var localeCode = new LocaleIdentifier(localeCodeInString);
+        for (var i = 0; i < LocalizationSettings.AvailableLocales.Locales.Count; i++)
         {
-            Locale aLocale = LocalizationSettings.AvailableLocales.Locales[i];
-            LocaleIdentifier anIdentifier = aLocale.Identifier;
-            if (anIdentifier == localeCode)
-            {
-                LocalizationSettings.SelectedLocale = aLocale;
-            }
+            var aLocale = LocalizationSettings.AvailableLocales.Locales[i];
+            var anIdentifier = aLocale.Identifier;
+            if (anIdentifier == localeCode) LocalizationSettings.SelectedLocale = aLocale;
         }
 
         //Change fonts
-        TextMeshProUGUI[] texts = GameObject.FindObjectsOfType<TextMeshProUGUI>(true);
+        var texts = FindObjectsOfType<TextMeshProUGUI>(true);
         TMP_FontAsset font;
-        LocaleCode localeCodeEnum = (LocaleCode)Enum.Parse(typeof(LocaleCode), localeCodeInString);
+        var localeCodeEnum = (LocaleCode)Enum.Parse(typeof(LocaleCode), localeCodeInString);
 
         switch (localeCodeEnum)
         {
@@ -105,10 +113,9 @@ public class Localization : MonoBehaviour
                 font = font_kr;
                 break;
         }
-        foreach (TextMeshProUGUI text in texts)
-        {
+
+        foreach (var text in texts)
             if (text.gameObject.tag != "fixedLocale")
                 text.font = font;
-        }
     }
 }

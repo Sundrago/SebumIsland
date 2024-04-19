@@ -1,44 +1,28 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+///     Manages and animate 2D skybox.
+/// </summary>
 [RequireComponent(typeof(RectTransform))]
 public class Skybox2D_Manager : MonoBehaviour
 {
-    [SerializeField] float scrollSpeed;
-    [SerializeField] Sprite[] bg_sprites;
+    [SerializeField] private float scrollSpeed;
+    [SerializeField] private Sprite[] bg_sprites;
     private GameObject child;
+
+    private int debugInt;
     private RectTransform rect;
 
-    int debugInt = 0;
-    /*
-     * 0 ~ 5 : midnight
-     * 5 ~ 9 : evening
-     * 9 ~ 18 : midday
-     * 18 ~ 19  : daybreak
-     * 19 ~ 22 : sunset
-     * 22 ~ 24 : midnight
-     */
-
-    void Start()
+    private void Start()
     {
-        rect = GetComponent<RectTransform>();
-        rect.sizeDelta = new Vector2(Screen.height, Screen.height);
-        GetComponent<Image>().sprite = bg_sprites[GetBgIdx()];
-
-        //create child
-        child = Instantiate(gameObject, gameObject.transform);
-        Destroy(child.GetComponent<Skybox2D_Manager>());
-        child.transform.position = gameObject.transform.position;
-
-        //set child pos
-        Vector2 childPos = child.GetComponent<RectTransform>().anchoredPosition;
-        childPos.x -= rect.sizeDelta.x;
-        child.GetComponent<RectTransform>().anchoredPosition = childPos;
+        InitiateRectTrandform();
+        CreateChild();
+        SetChildPosition();
     }
 
-    void Update()
+    private void Update()
     {
         rect.anchoredPosition = new Vector2(
             rect.anchoredPosition.x + scrollSpeed * Time.deltaTime,
@@ -46,17 +30,36 @@ public class Skybox2D_Manager : MonoBehaviour
         );
 
         if (rect.anchoredPosition.x > rect.sizeDelta.x)
-        {
             rect.anchoredPosition = new Vector2(
                 rect.anchoredPosition.x - rect.sizeDelta.x,
                 rect.anchoredPosition.y
             );
-        }
+    }
+
+    private void InitiateRectTrandform()
+    {
+        rect = GetComponent<RectTransform>();
+        rect.sizeDelta = new Vector2(Screen.height, Screen.height);
+        GetComponent<Image>().sprite = bg_sprites[GetBgIdx()];
+    }
+
+    private void SetChildPosition()
+    {
+        var childPos = child.GetComponent<RectTransform>().anchoredPosition;
+        childPos.x -= rect.sizeDelta.x;
+        child.GetComponent<RectTransform>().anchoredPosition = childPos;
+    }
+
+    private void CreateChild()
+    {
+        child = Instantiate(gameObject, gameObject.transform);
+        Destroy(child.GetComponent<Skybox2D_Manager>());
+        child.transform.position = gameObject.transform.position;
     }
 
     private int GetBgIdx()
     {
-        System.DateTime time = System.DateTime.Now;
+        var time = DateTime.Now;
         if (time.Hour < 5) return 0;
         if (time.Hour < 9) return 1;
         if (time.Hour < 18) return 2;

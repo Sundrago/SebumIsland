@@ -1,18 +1,19 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using UnityEngine;
 using TMPro;
-using UnityEngine.PlayerLoop;
+using UnityEngine;
+using UnityEngine.Serialization;
 
+/// This class represents a price, consisting of an amount (integer) and a character code (string).
 public class Price
 {
     public int amount;
     public string charCode;
     public int idx;
-    
+
     public Price(int amt = 0, string idxCode = "a")
     {
-        if(amount < 10000)
+        if (amount < 10000)
         {
             amount = amt;
             charCode = idxCode;
@@ -29,38 +30,28 @@ public class Price
         charCode = ConvertIntToCode(idx);
 
         if (amount >= 10000) UpdateUnit();
-    } 
+    }
 
     public string GetString()
     {
-        return amount.ToString() + charCode;
+        return amount + charCode;
     }
 
     public int ConvertCodeToInt(string code)
     {
-        int index = 0;
-        // for(int i = code.Length-1; i>=0; i--)
-        // {
-        //     char charIdx = code[i];
-        //     if (i == code.Length - 1) index += (charIdx - 'a');
-        //     else
-        //     {
-        //         int digit = code.Length - 1 - i;
-        //         index += (charIdx - 'a' + 1) * Mathf.RoundToInt(Mathf.Pow(26, digit));
-        //     }
-        // }
-        index += (code[0] - 'a');
+        var index = 0;
+        index += code[0] - 'a';
         return index;
     }
 
     public string ConvertIntToCode(int idx)
     {
-        string code = "";
+        var code = "";
 
         if (idx >= 26)
         {
-            int idxCode = (int)System.Math.Truncate(idx / 26f) + 96;
-            char myChar = System.Convert.ToChar(idxCode);
+            var idxCode = (int)Math.Truncate(idx / 26f) + 96;
+            var myChar = Convert.ToChar(idxCode);
             code += myChar;
 
             idx = idx % 26;
@@ -69,7 +60,7 @@ public class Price
         if (idx >= 0)
         {
             char myChar;
-            myChar = System.Convert.ToChar(idx + 97);
+            myChar = Convert.ToChar(idx + 97);
 
             code += myChar;
         }
@@ -78,72 +69,75 @@ public class Price
     }
 }
 
-public class MoneyUI : MonoBehaviour
+/// <summary>
+///     Manages money-related operations such as adding, subtracting, and checking money balance.
+/// </summary>
+public class MoneyManager : MonoBehaviour
 {
-    public static MoneyUI Instance;
-    public List<Price> balcance = new List<Price>();
     [SerializeField] public TextMeshProUGUI moneyText, gemText, oilText;
-    [SerializeField] RemoteUpgrade remoteUpgrade;
-    [SerializeField] BuildPanelCtrl buildPanelCtrl;
-    [SerializeField]
-    private Coin2DAnimationManager coin2D;
-    private int gemAmount = 0;
-    private int oilAmount = 0;
-    
+
+    [FormerlySerializedAs("remoteUpgrade")] [SerializeField]
+    private RemoteUpgradeManager remoteUpgradeManager;
+
+    [FormerlySerializedAs("buildPanelCtrl")] [SerializeField]
+    private BuildPanel buildPanel;
+
+    [SerializeField] private Coin2DAnimationManager coin2D;
+
+    public List<Price> balcance = new();
+    private int gemAmount;
+    private int oilAmount;
+    public static MoneyManager Instance { get; private set; }
+
     private void Awake()
     {
         Instance = this;
     }
 
-    void Start()
+    private void Start()
     {
         Application.targetFrameRate = 60;
         UpdateUI();
     }
 
-    // public void Update()
-    // {
-    //     if(Time.frameCount % 30 == 0)
-    //     {
-            
-    //     }
-    // }
-
-    void UpdateUI(){
-        for (int i = balcance.Count - 1; i >= 0; i--)
+    private void UpdateUI()
+    {
+        for (var i = balcance.Count - 1; i >= 0; i--)
+            if (balcance[i].amount > 0)
             {
-                if (balcance[i].amount > 0)
-                {
-                    moneyText.text = i > 0 & balcance[i].amount < 10 ? balcance[i].amount + "." + Mathf.Floor(balcance[i - 1].amount / 1000f) + balcance[i].charCode : balcance[i].amount + balcance[i].charCode;
-                    break;
-                } else
-                {
-                    if (i == 0) moneyText.text = GetMyBalance().GetString();
-                }
+                moneyText.text = (i > 0) & (balcance[i].amount < 10)
+                    ? balcance[i].amount + "." + Mathf.Floor(balcance[i - 1].amount / 1000f) + balcance[i].charCode
+                    : balcance[i].amount + balcance[i].charCode;
+                break;
             }
+            else
+            {
+                if (i == 0) moneyText.text = GetMyBalance().GetString();
+            }
+
         if (balcance.Count == 0) moneyText.text = "0a";
 
         oilText.text = oilAmount.ToString();
         gemText.text = gemAmount.ToString();
     }
 
-    string ConvertIntToCode(int idx)
+    private string ConvertIntToCode(int idx)
     {
-        string code = "";
+        var code = "";
 
-        if(idx >= 26)
+        if (idx >= 26)
         {
-            int idxCode = (int)System.Math.Truncate(idx / 26f) + 96;
-            char myChar = System.Convert.ToChar(idxCode);
+            var idxCode = (int)Math.Truncate(idx / 26f) + 96;
+            var myChar = Convert.ToChar(idxCode);
             code += myChar;
 
             idx = idx % 26;
         }
 
-        if(idx >= 0)
+        if (idx >= 0)
         {
             char myChar;
-            myChar = System.Convert.ToChar(idx + 97);
+            myChar = Convert.ToChar(idx + 97);
 
             code += myChar;
         }
@@ -153,12 +147,12 @@ public class MoneyUI : MonoBehaviour
 
     public void AddMoney(Price myPrice)
     {
-        int money_idx = myPrice.idx;
+        var money_idx = myPrice.idx;
 
-        if(balcance.Count <= money_idx)
+        if (balcance.Count <= money_idx)
         {
-            int addAmount = money_idx - balcance.Count;
-            for (int i = 0; i<= addAmount; i++)
+            var addAmount = money_idx - balcance.Count;
+            for (var i = 0; i <= addAmount; i++)
                 balcance.Add(new Price(0, ConvertIntToCode(balcance.Count)));
         }
 
@@ -170,7 +164,7 @@ public class MoneyUI : MonoBehaviour
 
     public void AddGemOil(CoinType coinType, int amount)
     {
-        if(coinType == CoinType.Gem) 
+        if (coinType == CoinType.Gem)
             gemAmount += amount;
         else if (coinType == CoinType.Oil)
             oilAmount += amount;
@@ -183,7 +177,9 @@ public class MoneyUI : MonoBehaviour
         {
             if (gemAmount >= amount) return true;
             return false;
-        } else if (coinType == CoinType.Oil)
+        }
+
+        if (coinType == CoinType.Oil)
         {
             if (oilAmount >= amount) return true;
             return false;
@@ -195,12 +191,14 @@ public class MoneyUI : MonoBehaviour
     public bool SubtractGemOil(CoinType coinType, int amount)
     {
         if (!HasEnoughGemOil(coinType, amount)) return false;
-        
+
         if (coinType == CoinType.Gem)
         {
             gemAmount -= amount;
             return true;
-        } else if (coinType == CoinType.Oil)
+        }
+
+        if (coinType == CoinType.Oil)
         {
             oilAmount -= amount;
             return true;
@@ -250,32 +248,30 @@ public class MoneyUI : MonoBehaviour
         if (balcance[idx].amount < 0)
         {
             balcance[idx].amount += 10000;
-            balcance[idx+1].amount -= 1;
+            balcance[idx + 1].amount -= 1;
             CheckIfShort(idx + 1);
         }
     }
 
     public Price GetMyBalance()
     {
-        for (int i = balcance.Count - 1; i >= 0; i--)
-        {
+        for (var i = balcance.Count - 1; i >= 0; i--)
             if (balcance[i].amount > 0)
-            {
                 return new Price(balcance[i].amount, balcance[i].charCode);
-            }
-        }
-        return new Price(0, "a");
+        return new Price();
     }
 
     public bool HasEnoughMoney(Price price)
     {
-        Price balance = GetMyBalance();
+        var balance = GetMyBalance();
         if (balance.idx > price.idx) return true;
-        else if(balance.idx == price.idx)
+
+        if (balance.idx == price.idx)
         {
             if (balance.amount >= price.amount) return true;
-            else return false;
+            return false;
         }
+
         return false;
     }
 
@@ -287,7 +283,7 @@ public class MoneyUI : MonoBehaviour
 
     private void SetBtnAvailabilty()
     {
-        remoteUpgrade.GetAvailableUpgrades();
-        buildPanelCtrl.GetAvailableUpgrades();
+        remoteUpgradeManager.GetAvailableUpgrades();
+        buildPanel.GetAvailableUpgrades();
     }
 }

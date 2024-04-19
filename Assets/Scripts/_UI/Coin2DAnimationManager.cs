@@ -1,102 +1,122 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using DG.Tweening;
-using Unity.VisualScripting;
+using UnityEngine;
 using UnityEngine.Pool;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public enum CoinType { Coin, Gem, Oil };
+public enum CoinType
+{
+    Coin,
+    Gem,
+    Oil
+}
+
+/// <summary>
+///     Handles the animation and movement of coins, gems, and oil in the game.
+/// </summary>
 public class Coin2DAnimationManager : MonoBehaviour
 {
-    [SerializeField] private GameObject Coin_prefab, Gem_prefab, Oil_prefab;
-    [SerializeField] private Transform coin_target, gem_target, oil_target;
+    [FormerlySerializedAs("Coin_prefab")] [SerializeField]
+    private GameObject coinPrefab;
 
-    private List<ObjectPool<GameObject>> obj_pools = new List<ObjectPool<GameObject>>();
+    [FormerlySerializedAs("Gem_prefab")] [SerializeField]
+    private GameObject gemPrefab;
 
-    
+    [FormerlySerializedAs("Oil_prefab")] [SerializeField]
+    private GameObject oilPrefab;
+
+    [FormerlySerializedAs("coin_target")] [SerializeField]
+    private Transform coinTarget;
+
+    [FormerlySerializedAs("gem_target")] [SerializeField]
+    private Transform gemTarget;
+
+    [FormerlySerializedAs("oil_target")] [SerializeField]
+    private Transform oilTarget;
+
+    private readonly List<ObjectPool<GameObject>> obj_pools = new();
 
     private void Start()
     {
         foreach (CoinType type in Enum.GetValues(typeof(CoinType)))
         {
-            int defaultCapacity = 5;
-            int maxCapacity = 30;
+            var defaultCapacity = 5;
+            var maxCapacity = 30;
 
-            ObjectPool<GameObject> new_pool = new ObjectPool<GameObject>(() => {
-                GameObject obj;
-                switch (type)
+            var new_pool = new ObjectPool<GameObject>(() =>
                 {
-                    case CoinType.Coin:
-                        obj = Instantiate(Coin_prefab, gameObject.transform);
-                        break;
-                    case CoinType.Gem:
-                        obj = Instantiate(Gem_prefab, gameObject.transform);
-                        break;
-                    default: //CoinType.Oil:
-                        obj = Instantiate(Oil_prefab, gameObject.transform);
-                        break;
-                }
-                return obj;
-            }, obj =>
-            {
-                obj.gameObject.SetActive(true);
-            }, obj =>
-            {
-                obj.gameObject.SetActive(false);
-            }, obj =>
-            {
-                Destroy(obj.gameObject);
-            }, true, defaultCapacity, maxCapacity);
+                    GameObject obj;
+                    switch (type)
+                    {
+                        case CoinType.Coin:
+                            obj = Instantiate(coinPrefab, gameObject.transform);
+                            break;
+                        case CoinType.Gem:
+                            obj = Instantiate(gemPrefab, gameObject.transform);
+                            break;
+                        default: //CoinType.Oil:
+                            obj = Instantiate(oilPrefab, gameObject.transform);
+                            break;
+                    }
+
+                    return obj;
+                }, obj => { obj.gameObject.SetActive(true); }, obj => { obj.gameObject.SetActive(false); },
+                obj => { Destroy(obj.gameObject); }, true, defaultCapacity, maxCapacity);
 
             obj_pools.Add(new_pool);
         }
     }
-    
-    public void AddCoin(CoinType type, Vector3 startPos, float _velocity, int count, float startAngle = 0f, float endAngle = 2f)
-    {
-        for (int i = 0; i < count; i++)
-        {
-            float durationFactor = Random.Range(0.75f, 1.5f);
 
-            Vector3[] path = new Vector3[3];
+    public void AddCoin(CoinType type, Vector3 startPos, float _velocity, int count, float startAngle = 0f,
+        float endAngle = 2f)
+    {
+        for (var i = 0; i < count; i++)
+        {
+            var durationFactor = Random.Range(0.75f, 1.5f);
+
+            var path = new Vector3[3];
             path[0] = startPos;
 
-            GameObject obj = obj_pools[(int)type].Get();
-            float velocity = _velocity * Random.Range(0.8f, 1.2f);
+            var obj = obj_pools[(int)type].Get();
+            var velocity = _velocity * Random.Range(0.8f, 1.2f);
 
             switch (type)
             {
                 case CoinType.Coin:
-                    path[2] = coin_target.position;
+                    path[2] = coinTarget.position;
                     break;
                 case CoinType.Gem:
-                    path[2] = gem_target.position;
+                    path[2] = gemTarget.position;
                     break;
-                default: //CoinType.Oil:
-                    path[2] = oil_target.position;
+                default:
+                    path[2] = oilTarget.position;
                     break;
             }
 
-            obj.transform.position = startPos;
-
-            float angle = Random.Range(startAngle, endAngle) * Mathf.PI;
-            path[0] = startPos + new Vector3(Mathf.Sin(angle) * velocity, Mathf.Cos(angle) * velocity, 0);
-
-            Vector3 diff = startPos - path[0];
-            path[1] = Vector3.Lerp(path[0], path[2], Random.Range(0.3f, 0.5f)) - (diff * Random.Range(0.3f, 0.8f));
-
-            obj.transform.DOMove(path[0], 0.3f * durationFactor)
-                .SetEase(Ease.OutCirc)
-                .OnComplete(() => {
-                    obj.transform.DOPath(path, 0.7f * durationFactor, PathType.CatmullRom, PathMode.TopDown2D, 1)
-                        .SetEase((Ease.InOutCubic))
-                        .OnComplete(() => {
-                            obj_pools[(int)type].Release(obj);
-                        });
-                });
+            AnimateCoinObject(type, startPos, startAngle, endAngle, obj, path, velocity, durationFactor);
         }
     }
 
+    private void AnimateCoinObject(CoinType type, Vector3 startPos, float startAngle, float endAngle, GameObject obj,
+        Vector3[] path, float velocity, float durationFactor)
+    {
+        obj.transform.position = startPos;
+
+        var angle = Random.Range(startAngle, endAngle) * Mathf.PI;
+        path[0] = startPos + new Vector3(Mathf.Sin(angle) * velocity, Mathf.Cos(angle) * velocity, 0);
+
+        var diff = startPos - path[0];
+        path[1] = Vector3.Lerp(path[0], path[2], Random.Range(0.3f, 0.5f)) - diff * Random.Range(0.3f, 0.8f);
+
+        obj.transform.DOMove(path[0], 0.3f * durationFactor)
+            .SetEase(Ease.OutCirc)
+            .OnComplete(() =>
+            {
+                obj.transform.DOPath(path, 0.7f * durationFactor, PathType.CatmullRom, PathMode.TopDown2D, 1)
+                    .SetEase(Ease.InOutCubic)
+                    .OnComplete(() => { obj_pools[(int)type].Release(obj); });
+            });
+    }
 }

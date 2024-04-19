@@ -1,18 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using TMPro;
+using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(Animator))]
-public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPointerUpHandler
+public class PigiController : MonoBehaviour //, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
-    [Header("피지 ID")]
-    public string ID;
+    [Header("피지 ID")] public string ID;
 
     [SerializeField] public Material[] obj_2d = new Material[3];
-    [SerializeField] MeshRenderer plane;
+    [SerializeField] private MeshRenderer plane;
 
     public bool autoParticleOn = true;
 
@@ -20,86 +17,75 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
     public float progress;
 
     public float growTime = 1;
-    public Price sellPrice = new Price(1, "a");
     public bool showCoin = true;
-    public Landmark landmark;
-
-    private int currentStatus = 0;
-    private bool timerSet = false;
-    public bool grown = false;
-    private bool harvested = false;
-    private bool pop = false;
-
-    private MoneyUI money;
-
-    private float bonusMultiplier = 1f;
-    private System.DateTime startTime;
-    private System.TimeSpan timeSpan;
-    private NewPigiCtrl newPigiCtrl;
+    [FormerlySerializedAs("landmark")] public LandmarkController landmarkController;
+    public bool grown;
     private Animator animator;
 
-    private GameObject mainCamera;
+    private float bonusMultiplier = 1f;
     private GameObject coin2d;
-    private GameObject myParticle;
-    private ParticleSystem.MainModule main;
+
+    private int currentStatus;
     private ParticleSystem.EmissionModule emission;
+    private bool harvested;
+    private ParticleSystem.MainModule main;
+
+    private GameObject mainCamera;
+
+    private MoneyManager money;
+    private GameObject myParticle;
+    private NewPigiAnimationController newPigiAnimationController;
+    private bool pop;
+    public Price sellPrice = new(1);
     private ParticleSystem.ShapeModule shape;
+    private DateTime startTime;
+    private bool timerSet;
+    private TimeSpan timeSpan;
 
     public void Start()
     {
-        newPigiCtrl = NewPigiCtrl.Instance;
+        newPigiAnimationController = NewPigiAnimationController.Instance;
         animator = gameObject.GetComponent<Animator>();
-        
-        money = MoneyUI.Instance;
+
+        money = MoneyManager.Instance;
         mainCamera = GameObject.Find("Main Camera"); //Main Camera
         coin2d = GameObject.Find("UI-CANVAS"); //UI-CANVAS
 
         StartTimer();
     }
 
-    public void Init(Landmark _landmark, Vector3 _pos, string _ID, float _bonusMultiplier = 1f)
-    {
-        ID = _ID;
-        landmark = _landmark;
-        gameObject.transform.parent.gameObject.transform.localPosition = _pos;
-        gameObject.transform.parent.gameObject.SetActive(true);
-        bonusMultiplier = _bonusMultiplier;
-        Set2DOBJ(0);
-    }
-
-    void Update()
+    private void Update()
     {
         if (timerSet)
         {
-            timeSpan = System.DateTime.Now - startTime;
+            timeSpan = DateTime.Now - startTime;
             timer = (float)timeSpan.TotalSeconds / growTime;
 
             progress = timer * 100 / 90f;
             progress = Mathf.Max(Mathf.Min(progress, 1f), 0.01f);
 
-            if (timer > 0.3f & currentStatus == 0)
+            if ((timer > 0.3f) & (currentStatus == 0))
             {
                 currentStatus = 1;
                 PlayAnim(currentStatus);
             }
-            else if (timer > 0.5f & currentStatus == 1)
+            else if ((timer > 0.5f) & (currentStatus == 1))
             {
                 currentStatus = 2;
                 PlayAnim(currentStatus);
             }
-            else if (timer >= 0.8f & currentStatus == 2)
+            else if ((timer >= 0.8f) & (currentStatus == 2))
             {
                 currentStatus = 3;
                 PlayAnim(currentStatus);
             }
         }
 
-        if (harvested & myParticle!=null && myParticle.gameObject.activeSelf)
-        {
+        if (harvested & (myParticle != null) && myParticle.gameObject.activeSelf)
             shape.position = gameObject.transform.position;
-        }
 
-        if (harvested & mainCamera.GetComponent<Camera>().WorldToScreenPoint(gameObject.transform.position).y > Screen.height)
+        if (harvested & (mainCamera.GetComponent<Camera>().WorldToScreenPoint(gameObject.transform.position).y >
+                         Screen.height))
         {
             AddMoney();
             AnimFinished();
@@ -107,22 +93,32 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
         }
     }
 
-    void PlayAnim(int currentStatus)
+    public void Init(LandmarkController landmarkController, Vector3 _pos, string _ID, float _bonusMultiplier = 1f)
+    {
+        ID = _ID;
+        this.landmarkController = landmarkController;
+        gameObject.transform.parent.gameObject.transform.localPosition = _pos;
+        gameObject.transform.parent.gameObject.SetActive(true);
+        bonusMultiplier = _bonusMultiplier;
+        Set2DOBJ(0);
+    }
+
+    private void PlayAnim(int currentStatus)
     {
         //print(currentStatus);
         animator.SetTrigger("anim-" + currentStatus);
 
-        if(currentStatus == 0) Set2DOBJ(0);
+        if (currentStatus == 0) Set2DOBJ(0);
     }
 
     public void StartTimer()
     {
-        growTime = landmark.growTime * Random.Range(0.6f, 1.5f);
-        sellPrice = landmark.sellPrice;
+        growTime = landmarkController.GrowTime * Random.Range(0.6f, 1.5f);
+        sellPrice = landmarkController.SellPrice;
 
         currentStatus = 0;
         PlayAnim(currentStatus);
-        startTime = System.DateTime.Now;
+        startTime = DateTime.Now;
         timerSet = true;
         grown = false;
     }
@@ -131,13 +127,10 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
     {
         if (harvested) AddMoney();
 
-        if (myParticle.gameObject.activeSelf)
-        {
-            emission.rateOverTime = 0;
-        }
+        if (myParticle.gameObject.activeSelf) emission.rateOverTime = 0;
 
         ResetAllAnimatorTriggers(animator);
-        Vector3 newPos = transform.parent.gameObject.transform.position;
+        var newPos = transform.parent.gameObject.transform.position;
         newPos.y = 0;
         transform.parent.gameObject.transform.position = newPos;
         StartTimer();
@@ -146,11 +139,12 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
 
     private void AddMoney()
     {
-        newPigiCtrl.GotPigi(ID);
+        newPigiAnimationController.GotPigi(ID);
         if (!showCoin) return;
         money.AddCoin2D(3, Camera.main.WorldToScreenPoint(gameObject.transform.position));
 
-        Price price = new Price(Mathf.RoundToInt(landmark.sellPrice.amount * bonusMultiplier), landmark.sellPrice.charCode);
+        var price = new Price(Mathf.RoundToInt(landmarkController.SellPrice.amount * bonusMultiplier),
+            landmarkController.SellPrice.charCode);
         money.AddMoney(price);
         harvested = false;
     }
@@ -163,7 +157,7 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
         timerSet = false;
         ResetAllAnimatorTriggers(animator);
         animator.SetTrigger("anim-5");
-        animator.speed = Random.Range(0.7f,1.4f);
+        animator.speed = Random.Range(0.7f, 1.4f);
 
         if (!autoParticleOn) return;
         CreateAndInitFlyFX(10);
@@ -172,24 +166,20 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
     private void ResetAllAnimatorTriggers(Animator animator)
     {
         foreach (var trigger in animator.parameters)
-        {
             if (trigger.type == AnimatorControllerParameterType.Trigger)
-            {
                 animator.ResetTrigger(trigger.name);
-            }
-        }
     }
 
     public void Set2DOBJ(int idx)
     {
         plane.material = obj_2d[idx];
 
-        if(idx == 2)
+        if (idx == 2)
         {
             grown = true;
             timerSet = false;
             progress = 1f;
-            landmark.PigiIsReady(gameObject);
+            landmarkController.PigiIsReady(gameObject);
         }
     }
 
@@ -202,21 +192,16 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
     {
         targetY *= 2f;
 
-        if (targetY < 3f & targetY > 0)
-        {
-            targetY = EaseInExpo(targetY / 3f) * 3f;
-        }
+        if ((targetY < 3f) & (targetY > 0)) targetY = EaseInExpo(targetY / 3f) * 3f;
 
         if (!pop)
-        {
             if (targetY > 2.5f)
             {
                 pop = true;
                 FXManager.Instance.CreateFX(FXType.PigiPopFX, gameObject.transform);
-                AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.pigipop);
-                landmark.RemovePigiIsReady(gameObject);
+                AudioManager.Instance.PlaySFXbyTag(SFX_tag.Pigipop);
+                landmarkController.RemovePigiIsReady(gameObject);
             }
-        }
 
         float EaseInExpo(float x)
         {
@@ -227,19 +212,16 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
         //curPosition.z = transform.parent.gameObject.transform.position.z;
 
 
-        Vector3 targetPos = transform.parent.gameObject.transform.position;
+        var targetPos = transform.parent.gameObject.transform.position;
         targetPos.y = targetY;
 
         transform.parent.gameObject.transform.position = targetPos;
 
-        float normal = (transform.parent.gameObject.transform.position.y) / 6;
+        var normal = transform.parent.gameObject.transform.position.y / 6;
         if (normal >= 1) normal = 0.99f;
         else if (normal < 0) normal = 0;
 
-        if (myParticle.gameObject.activeSelf)
-        {
-            shape.position = gameObject.transform.position;
-        }
+        if (myParticle.gameObject.activeSelf) shape.position = gameObject.transform.position;
         animator.Play("pigi_4", 0, normal);
     }
 
@@ -247,12 +229,9 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
     {
         if (transform.parent.gameObject.transform.position.y < 2.5f)
         {
-            if (myParticle.gameObject.activeSelf)
-            {
-                emission.rateOverTime = 0;
-            }
+            if (myParticle.gameObject.activeSelf) emission.rateOverTime = 0;
             pop = false;
-            Vector3 newPos = transform.parent.gameObject.transform.position;
+            var newPos = transform.parent.gameObject.transform.position;
             newPos.y = 0;
             transform.parent.gameObject.transform.position = newPos;
             animator.SetTrigger("anim-3-idle");
@@ -271,8 +250,8 @@ public class PigiCtrl : MonoBehaviour//, IPointerDownHandler, IDragHandler, IPoi
             animator.SetTrigger("anim-5");
             animator.speed = 1f;
 
-            if (landmark.grownPigis.Contains(gameObject))
-                landmark.grownPigis.Remove(gameObject);
+            if (landmarkController.GrownPigis.Contains(gameObject))
+                landmarkController.GrownPigis.Remove(gameObject);
         }
     }
 

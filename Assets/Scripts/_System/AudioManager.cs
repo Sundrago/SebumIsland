@@ -1,23 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
 using Sirenix.OdinInspector;
+using UnityEngine;
 
-public enum SFX_tag {pigipop, upgrade, buildComplete, levelUp, newPigiFound, correct, yeah, smallPopPop, bgm_main, quest_arrive, quest_clear}
-
-public class AudioCtrl : SerializedMonoBehaviour
+public enum SFX_tag
 {
-    public static AudioCtrl Instance;
+    Pigipop,
+    Upgrade,
+    BuildComplete,
+    LevelUp,
+    NewPigiFound,
+    Correct,
+    Yeah,
+    SmallPopPop,
+    BGMMain,
+    QuestArrive,
+    QuestClear
+}
 
-    [SerializeField] AudioSource sfx_source, bgm_source;
+/// <summary>
+///     Manages audio playback for the game.
+/// </summary>
+public class AudioManager : SerializedMonoBehaviour
+{
+    [SerializeField] private AudioSource sfx_source, bgm_source;
 
-    [TableList(ShowIndexLabels = true)]
-    [SerializeField] AudioData[] audioDatas;
+    [TableList(ShowIndexLabels = true)] [SerializeField]
+    private AudioData[] audioDatas;
+
+    private AudioData bgmPlaying;
+    private float bgmVolume = 0.8f;
 
     private float sfxVolume = 0.8f;
-    private float bgmVolume = 0.8f;
-    private AudioData bgmPlaying = null;
+    public static AudioManager Instance { get; private set; }
 
     private void Awake()
     {
@@ -37,13 +51,9 @@ public class AudioCtrl : SerializedMonoBehaviour
 
     public void PlaySFXbyTag(SFX_tag tag)
     {
-        foreach(AudioData data in audioDatas)
-        {
-            if(data.tag == tag)
-            {
+        foreach (var data in audioDatas)
+            if (data.tag == tag)
                 sfx_source.PlayOneShot(data.src, data.volume * sfxVolume);
-            }
-        }
         //sfx_source.PlayOneShot(audioClips[(int)tag]);
     }
 
@@ -59,8 +69,7 @@ public class AudioCtrl : SerializedMonoBehaviour
 
     public void PlayBGM(SFX_tag tag)
     {
-        foreach (AudioData data in audioDatas)
-        {
+        foreach (var data in audioDatas)
             if (data.tag == tag)
             {
                 bgmPlaying = data;
@@ -69,7 +78,6 @@ public class AudioCtrl : SerializedMonoBehaviour
                 bgm_source.Play();
                 return;
             }
-        }
     }
 
     [Serializable]
@@ -77,8 +85,7 @@ public class AudioCtrl : SerializedMonoBehaviour
     {
         public SFX_tag tag;
         public AudioClip src;
-        [Range(0f, 1f)]
-        public float volume = 0.8f;
-    }
 
+        [Range(0f, 1f)] public float volume = 0.8f;
+    }
 }

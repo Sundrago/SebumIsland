@@ -1,148 +1,94 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using System;
-using Sirenix.OdinInspector;
+using UnityEngine;
 
-/*
-modelID_family
-
-
-*/
-
+/// <summary>
+///     Represents a location object in the game.
+/// </summary>
 public class LocationObject : MonoBehaviour
 {
+    private const string format = "yyyy/MM/dd HH:mm:ss";
+
+    [field: SerializeField] public LandmarkScriptableObjet ScriptableObjet { get; private set; }
+
+    public DateTime buildCompleteTime = DateTime.Now;
+
+    private bool initiated;
+
     private LocationManger locationManger;
+    private IFormatProvider provider;
 
-    [Header("* 가로 세로 사이즈")]
-    [GUIColor(0.4f, 0.8f, 0.8f, 1f), Required]
-    public int width;
-    [GUIColor(0.4f, 0.8f, 0.8f, 1f), Required]
-    public int height;
 
-    [Header("* 피지 건물일 경우 체크")]
-    [GUIColor(0.4f, 0.8f, 0.8f, 1f), Required]
-    public bool isLandmark;
+    public int CopyN { get; set; }
+    public string LandMarkID { get; set; }
+    public int X { get; set; }
+    public int Y { get; set; }
 
-    [Header("* 피지건물 ID")]
-    [GUIColor(0.4f, 0.8f, 0.8f, 1f), Required]
-    public string modelID;
-    [GUIColor(0.4f, 0.8f, 0.8f, 1f), Required]
-    public string modelID_family;
-    [GUIColor(0.4f, 0.8f, 0.8f, 1f), Required]
-    public int modelID_levelID;
+    public UpgradeDataList Data { get; private set; }
+    public Price LevelUpPrice { get; private set; }
+    public int LevelUpTime { get; private set; }
+    public string NextLevelId { get; private set; }
+    public int UpgradeStatus { get; set; } = 0;
 
-    //public TextAsset DesertData;
 
-    [Header("비워둬도 됨.")]
-    [ReadOnly]
-    public int copyN;
-    [ReadOnly]
-    public string landMarkID;
-    [ReadOnly]
-    public int x;
-    [ReadOnly]
-    public int y;
-    [ReadOnly]
-    public string charCode;
-    [ReadOnly]
-    public int defaultGrowTime;
-    [ReadOnly]
-    public int maxUpdateIdx;
-    [ReadOnly]
-    public int pigiAmout;
-    [ReadOnly]
-    public Price defaultPrice;
-    [ReadOnly]
-    public int buildTime;
-    [ReadOnly]
-    public Price buildPrice;
-    [ReadOnly]
-    public UpgradeDataList data;
-    [ReadOnly]
-    public Price levelUpPrice;
-    [ReadOnly]
-    public int levelUpTime;
-    [ReadOnly]
-    public string nextLevelId;
-    [ReadOnly]
-    public int upgradeStatus = 0;
-
-    private bool started = false;
-
-    const string format = "yyyy/MM/dd HH:mm:ss";
-    System.IFormatProvider provider;
-    public System.DateTime buildCompleteTime = System.DateTime.Now;
-
-    public void ReadCSV(string buildCompleteTime_str = null)
+    public void ReadCSV(string buildCompleteTime = null)
     {
-        if(started) return;
-        started = true;
+        if (initiated) return;
+        initiated = true;
 
         locationManger = LocationManger.Instance;
+        LandMarkID = ScriptableObjet.ModelID + "-" + CopyN;
 
-        print("LOAD UPGDATA AT : " + modelID);
-        landMarkID = modelID + "-" + copyN;
-
-        CSVReader csv = locationManger.gameObject.GetComponent<CSVReader>();
+        var csv = locationManger.gameObject.GetComponent<CSVReader>();
         csv.Start();
-        data = csv.GetDataList(modelID);
-
-        charCode = data.charCode;
-        defaultGrowTime = data.defaultGrowTime;
-        maxUpdateIdx = data.maxUpdateIdx;
-        pigiAmout = data.pigiAmout;
-        defaultPrice = new Price(data.defaultPrice.amount, data.defaultPrice.charCode);
-        buildTime = data.buildTime;
-        buildPrice = data.buildPrice;
-
+        Data = csv.GetDataList(ScriptableObjet.ModelID);
         GetLevelUpInfo();
 
         //setup build time
-        if (buildCompleteTime_str == null)
-        {
-            buildCompleteTime = System.DateTime.Now.AddSeconds(buildTime);
-        }
+        if (buildCompleteTime == null)
+            this.buildCompleteTime = DateTime.Now.AddSeconds(Data.buildTime);
         else
-        {
-            buildCompleteTime = System.DateTime.ParseExact(buildCompleteTime_str, format, provider);
-        }
+            this.buildCompleteTime = DateTime.ParseExact(buildCompleteTime, format, provider);
     }
 
     private void GetLevelUpInfo()
     {
-        //LevelUP Settings.
-        levelUpPrice = new Price(-1, "a");
-        levelUpTime = -1;
-        nextLevelId = modelID_family + (modelID_levelID + 1);
-
-        GameObject nextLandmark = locationManger.FindAvailableObj(nextLevelId);
-        if(nextLandmark != null)
+        UpdateLevelUpData();
+        var nextLandmark = locationManger.FindAvailableObj(NextLevelId);
+        if (nextLandmark != null)
         {
-            UpgradeDataList nextLevel = CSVReader.Instance.GetDataList(nextLevelId);
+            var nextLevel = CSVReader.Instance.GetDataList(NextLevelId);
             nextLandmark.GetComponent<LocationObject>().ReadCSV();
-            levelUpPrice = nextLevel.buildPrice;
-            levelUpTime = nextLevel.buildTime;
+            LevelUpPrice = nextLevel.buildPrice;
+            LevelUpTime = nextLevel.buildTime;
         }
         else
         {
-            nextLevelId = "";
-            print("UpgradePanel : FAIL TO PARS nextLevelId");
+            NextLevelId = "";
         }
     }
 
-    public bool ReadyForLevelUp() {
-        if(upgradeStatus >= maxUpdateIdx - 1) return true;
-        else return false; 
+    private void UpdateLevelUpData()
+    {
+        LevelUpPrice = new Price(-1);
+        LevelUpTime = -1;
+        NextLevelId = ScriptableObjet.ModelIDFamily + (ScriptableObjet.ModelID + 1);
     }
 
-    public Price GetUpgradePrice() {
-        if(upgradeStatus >= maxUpdateIdx - 1)
+    public bool ReadyForLevelUp()
+    {
+        if (UpgradeStatus >= Data.maxUpdateIdx - 1) return true;
+        return false;
+    }
+
+    public Price GetUpgradePrice()
+    {
+        if (UpgradeStatus >= Data.maxUpdateIdx - 1)
         {
-            if (nextLevelId == "") return new Price(-1); 
-            return levelUpPrice;
+            if (NextLevelId == "") return new Price(-1);
+            return LevelUpPrice;
         }
-        return(data.data[upgradeStatus].price);
+
+        return Data.data[UpgradeStatus].price;
     }
 
     public string GetBuildTime()
@@ -150,4 +96,3 @@ public class LocationObject : MonoBehaviour
         return buildCompleteTime.ToString(format);
     }
 }
-

@@ -7,6 +7,66 @@ using UnityEngine.UI;
 using Sirenix.OdinInspector;
 using TMPro;
 
+public enum QuestType { CollectPigi, BuildLandmark, CollectMoney, Upgrade, Custom }
+public enum RewardType { money, jewel, oil }
+
+/// <summary>
+/// Holds information about a quest.
+/// </summary>
+[Serializable]
+public class QuestInformation
+{
+    [HorizontalGroup(Width = 0.25f), HideLabel]
+    public String ID = "default";
+    [HorizontalGroup, HideLabel]
+    public String Descr;
+}
+
+
+/// <summary>
+/// Holds a data which contains information about a quest.
+/// </summary>
+[Serializable]
+public class QuestData
+{
+    [VerticalGroup("Strings")]
+    [LabelWidth(50)]
+    public string Descr;
+    
+    [VerticalGroup("Quest")]
+    [LabelText("type"), LabelWidth(30)]
+    public QuestType questType;
+    
+    [VerticalGroup("Quest")]
+    [LabelText("amt"), LabelWidth(30)]
+    [DisableIf("questType", QuestType.Custom)]
+    public int questamt;
+    
+    [VerticalGroup("Quest")]
+    [LabelText("ID"), LabelWidth(30)]
+    public String quesetID;
+
+    [VerticalGroup("Reward")]
+    [LabelText("type"), LabelWidth(30)]
+    public RewardType rewardType;
+    
+    [VerticalGroup("Reward")]
+    [LabelText("amt"), LabelWidth(30)]
+    public int rewardAmt;
+    
+    [VerticalGroup("Reward")]
+    [DisableIf("@this.rewardType == RewardType.jewel || this.rewardType == RewardType.oil")]
+    [LabelText("ID"), LabelWidth(30)]
+    public string reardID;
+
+    [VerticalGroup("Strings")]
+    [TableList]
+    public List<QuestInformation> EndString;
+}
+
+/// <summary>
+/// Manages the tutorial progress for quests.
+/// </summary>
 public class QuestTutorialManager : MonoBehaviour
 {
     [SerializeField] Sprite tear_filled, tear_empth;
@@ -28,31 +88,19 @@ public class QuestTutorialManager : MonoBehaviour
     int tearsCount, tearsMaxCount = 0;
     bool completed;
 
-    public static QuestTutorialManager Instance;
+    public static QuestTutorialManager Instance { get; private set; }
 
     private void Awake()
     {
-        PlayerPrefs.DeleteAll();
         Instance = this;
     }
-
-    [Button]
-    void Start()
+    
+    private void Start()
     {
-        MoneyUI.Instance.AddMoney(new Price(5));
-
         ChangeState(1);
-
-        //for(int i = 0; i<8; i++)
-        //{
-        //    GameObject tear = Instantiate(tear_prefab, gameObject.transform);
-        //    tear.transform.position = Vector3.Lerp(tearLeft.position, tearRight.position, 0.5f);
-        //    tears.Add(tear.GetComponent<Image>());
-        //}
     } 
-
-   
-    void Update()
+    
+    private void Update()
     {
         if (Time.frameCount % 10 != 0) return;
         if (completed) return;
@@ -81,9 +129,9 @@ public class QuestTutorialManager : MonoBehaviour
         }
     }
 
-    void ChangeState(int _state)
+    private void ChangeState(int state)
     {
-        state = _state;
+        this.state = state;
 
         switch(state)
         {
@@ -109,50 +157,32 @@ public class QuestTutorialManager : MonoBehaviour
         }
     }
 
-    void ShowQuest()
+    private void ShowQuest()
     {
         gameObject.transform.DOLocalMoveX(-0, 1f)
             .SetEase(Ease.OutExpo);
 
-        AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.quest_arrive);
+        AudioManager.Instance.PlaySFXbyTag(SFX_tag.QuestArrive);
     }
 
-    void HideQuest()
+    private void HideQuest()
     {
         gameObject.transform.DOLocalMoveX(-350, 1f)
             .SetEase(Ease.OutExpo)
             .OnComplete(()=> { ChangeState(state + 1); });
     }
 
-    void CompleteQuest()
+    private void CompleteQuest()
     {
-
+        AudioManager.Instance.PlaySFXbyTag(SFX_tag.QuestClear);
     }
-
-    [Button]
-    void InitiateTear(int count)
+    
+    private void InitiateTear(int count)
     {
-        Vector3 targetpos = Vector3.zero;
-
         for (int i = 0; i < 8; i++)
         {
-            //Initiate Fades
-            if (i < count) tears[i].color = Color.white;
-            tears[i].gameObject.SetActive(i < count);
-            tears[i].sprite = tear_empth;
-
-            //Initiate Pos
-            if (i == 0)
-            {
-                tears[i].transform.position = Vector3.Lerp(tearLeft.position, tearRight.position, 0.5f);
-                targetpos = tears[i].GetComponent<RectTransform>().localPosition;
-                targetpos.x -= (count - 1) * tearWidth * 1 / 2f;
-                tears[i].GetComponent<RectTransform>().localPosition = targetpos;
-            } else
-            {
-                targetpos.x += tearWidth;
-                tears[i].GetComponent<RectTransform>().localPosition = targetpos;
-            }
+            UpdateTearSprite(count, i);
+            InitiateTearPosition(count, i);
         }
 
         tearsCount = 0;
@@ -161,10 +191,31 @@ public class QuestTutorialManager : MonoBehaviour
         complete_img.gameObject.SetActive(false);
     }
 
-    [Button]
-    void UpdateTears(int count)
+    private void InitiateTearPosition(int count, int i)
     {
-        print("UpdateTears "+count);
+        Vector3 targetpos = Vector3.zero;
+        if (i == 0)
+        {
+            tears[i].transform.position = Vector3.Lerp(tearLeft.position, tearRight.position, 0.5f);
+            targetpos = tears[i].GetComponent<RectTransform>().localPosition;
+            targetpos.x -= (count - 1) * tearWidth * 1 / 2f;
+            tears[i].GetComponent<RectTransform>().localPosition = targetpos;
+        } else
+        {
+            targetpos.x += tearWidth;
+            tears[i].GetComponent<RectTransform>().localPosition = targetpos;
+        }
+    }
+
+    private void UpdateTearSprite(int count, int i)
+    {
+        if (i < count) tears[i].color = Color.white;
+        tears[i].gameObject.SetActive(i < count);
+        tears[i].sprite = tear_empth;
+    }
+    
+    private void UpdateTears(int count)
+    {
         if (completed) return;
 
         tearsCount = count;
@@ -176,8 +227,7 @@ public class QuestTutorialManager : MonoBehaviour
 
         if(count >= tearsMaxCount)
         {
-            //clear
-            AudioCtrl.Instance.PlaySFXbyTag(SFX_tag.quest_clear);
+            AudioManager.Instance.PlaySFXbyTag(SFX_tag.QuestClear);
             for (int i = 0; i<count; i++)
             {
                 tears[i].DOFade(0f, 0.5f);
@@ -214,9 +264,9 @@ public class QuestTutorialManager : MonoBehaviour
     {
         particleFX.transform.position = Camera.main.ScreenToWorldPoint(hand.transform.position);
 
-        if (LocationManger.Instance.allocatedObj.Count != 0) UpdateTears(1);
+        if (LocationManger.Instance.AllocatedObj.Count != 0) UpdateTears(1);
 
-        if (LocationManger.Instance.settingMode)
+        if (LocationManger.Instance.SettingMode)
         {
             hand.gameObject.SetActive(false);
             particleFX.gameObject.SetActive(false);
@@ -368,56 +418,5 @@ public class QuestTutorialManager : MonoBehaviour
     }
 
     /* ------------------------------------------------------------------------ */
-
-    //Quest Checker - landmark, pigiCount, 
-}
-
-[Serializable]
-public class QuestData
-{
-    [VerticalGroup("Strings")]
-    [LabelWidth(50)]
-    public string Descr;
     
-    [VerticalGroup("Quest")]
-    [LabelText("type"), LabelWidth(30)]
-    public QuestType questType;
-    
-    [VerticalGroup("Quest")]
-    [LabelText("amt"), LabelWidth(30)]
-    [DisableIf("questType", QuestType.Custom)]
-    public int questamt;
-    
-    [VerticalGroup("Quest")]
-    [LabelText("ID"), LabelWidth(30)]
-    public String quesetID;
-
-    [VerticalGroup("Reward")]
-    [LabelText("type"), LabelWidth(30)]
-    public RewardType rewardType;
-    
-    [VerticalGroup("Reward")]
-    [LabelText("amt"), LabelWidth(30)]
-    public int rewardAmt;
-    
-    [VerticalGroup("Reward")]
-    [DisableIf("@this.rewardType == RewardType.jewel || this.rewardType == RewardType.oil")]
-    [LabelText("ID"), LabelWidth(30)]
-    public string reardID;
-
-    [VerticalGroup("Strings")]
-    [TableList]
-    public List<BalloonMsgData> EndString;
-}
-
-public enum QuestType { CollectPigi, BuildLandmark, CollectMoney, Upgrade, Custom }
-public enum RewardType { money, jewel, oil }
-
-[Serializable]
-public class BalloonMsgData
-{
-    [HorizontalGroup(Width = 0.25f), HideLabel]
-    public String ID = "default";
-    [HorizontalGroup, HideLabel]
-    public String Descr;
 }

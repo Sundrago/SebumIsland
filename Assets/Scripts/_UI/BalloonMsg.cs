@@ -1,29 +1,37 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
 using DG.Tweening;
+using TMPro;
+using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
+/// <summary>
+///     Responsible for displaying a balloon message UI element with fade-in and fade-out animations.
+/// </summary>
 public class BalloonMsg : MonoBehaviour
 {
-    [SerializeField] GameObject balloon_ui;
-    [SerializeField] TextMeshProUGUI text_ui;
-    [SerializeField] Image bg_ui;
-    private bool shown = false;
+    [FormerlySerializedAs("balloon_ui")] [SerializeField]
+    private GameObject balloonUI;
+
+    [FormerlySerializedAs("text_ui")] [SerializeField]
+    private TextMeshProUGUI textUI;
+
+    [FormerlySerializedAs("bg_ui")] [SerializeField]
+    private Image bgUI;
+
+    private bool shown;
 
     public void Show(string msg)
     {
-        text_ui.text = msg;
+        textUI.text = msg;
 
-        balloon_ui.transform.DOMoveY(-500f, 0.4f)
+        balloonUI.transform.DOMoveY(-500f, 0.4f)
             .SetEase(Ease.OutQuint)
             .From()
             .OnComplete(Wait);
-        bg_ui.DOFade(0, 0.3f)
+        bgUI.DOFade(0, 0.3f)
             .SetEase(Ease.OutQuint)
             .From();
-        text_ui.DOFade(0, 0.3f)
+        textUI.DOFade(0, 0.3f)
             .SetEase(Ease.OutQuint)
             .From();
         gameObject.SetActive(true);
@@ -31,9 +39,9 @@ public class BalloonMsg : MonoBehaviour
 
     public void Wait()
     {
-        bg_ui.DOFade(0.5f, 1.5f)
+        bgUI.DOFade(0.5f, 1.5f)
             .OnComplete(Hide);
-        text_ui.DOFade(0.8f, 1.5f);
+        textUI.DOFade(0.8f, 1.5f);
         shown = true;
     }
 
@@ -41,12 +49,12 @@ public class BalloonMsg : MonoBehaviour
     {
         if (!shown) return;
 
-        balloon_ui.transform.DOMoveY(Screen.height, 0.5f)
+        balloonUI.transform.DOMoveY(Screen.height, 0.5f)
             .SetEase(Ease.OutQuint)
             .OnComplete(DestroySelf);
-        bg_ui.DOFade(0, 0.5f)
+        bgUI.DOFade(0, 0.5f)
             .SetEase(Ease.OutQuint);
-        text_ui.DOFade(0, 0.5f)
+        textUI.DOFade(0, 0.5f)
             .SetEase(Ease.OutQuint);
     }
 

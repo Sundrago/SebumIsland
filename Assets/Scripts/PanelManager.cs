@@ -1,21 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+///     Manages the opening and closing of panels.
+/// </summary>
 public class PanelManager : MonoBehaviour
 {
-    [SerializeField]
-    CollectionPanelCtrl collectionPanelCtrl;
-    [SerializeField]
-    Settings settings;
-    [SerializeField]
-    NewUpgPanel newUpgPanel;
-    [SerializeField]
-    PigiInfoPanel pigiInfoPanel;
-    [SerializeField]
-    BuildPanelCtrl buildPanelCtrl;
-
-    public static PanelManager Instance;
+    [SerializeField] private PanelObject collectionPanel, settingsManager, upgradePanel, pigiInfoPanel, buildPanel;
+    public static PanelManager Instance { get; private set; }
 
     private void Awake()
     {
@@ -24,25 +15,16 @@ public class PanelManager : MonoBehaviour
 
     public void CloseOtherPanels(GameObject panel)
     {
-        if(panel.GetComponent<CollectionPanelCtrl>() == null)
-        {
-            collectionPanelCtrl.Hide();
-        }
-        if (panel.GetComponent<Settings>() == null)
-        {
-            settings.Hide();
-        }
-        if (panel.GetComponent<NewUpgPanel>() == null)
-        {
-            newUpgPanel.ClosePanel();
-        }
-        if (panel.GetComponent<PigiInfoPanel>() == null)
-        {
-            pigiInfoPanel.ClosePanel();
-        }
-        if (panel.GetComponent<BuildPanelCtrl>() == null)
-        {
-            buildPanelCtrl.ClosePanel();
-        }
+        TryToClosePanel(collectionPanel, panel);
+        TryToClosePanel(settingsManager, panel);
+        TryToClosePanel(upgradePanel, panel);
+        TryToClosePanel(pigiInfoPanel, panel);
+        TryToClosePanel(buildPanel, panel);
+    }
+
+    private void TryToClosePanel(PanelObject panelToClose, GameObject callingPanel)
+    {
+        if (panelToClose.gameObject != callingPanel)
+            panelToClose.ClosePanel();
     }
 }

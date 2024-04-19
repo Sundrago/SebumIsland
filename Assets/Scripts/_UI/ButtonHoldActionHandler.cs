@@ -1,13 +1,14 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class Btn_hold : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+/// <summary>
+///     Handles the actions when a button is held down.
+/// </summary>
+public class ButtonHoldActionHandler : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
-    public bool mouseDown = false;
-    public float startTime;
+    private bool mouseDown;
+    private float startTime;
 
     private void Update()
     {
@@ -15,14 +16,19 @@ public class Btn_hold : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         if (gameObject.GetComponent<Button>().interactable == false) return;
 
         if (startTime + 0.5f > Time.time) return;
-        else if(startTime + 2f > Time.time)
+
+        if (startTime + 2f > Time.time)
         {
             if (Time.frameCount % 8 == 0) gameObject.GetComponent<Button>().onClick.Invoke();
-        } else if((startTime + 4f > Time.time)) {
+        }
+        else if (startTime + 4f > Time.time)
+        {
             if (Time.frameCount % 4 == 0) gameObject.GetComponent<Button>().onClick.Invoke();
-        } else if (Time.frameCount % 2 == 0) gameObject.GetComponent<Button>().onClick.Invoke();
-
-
+        }
+        else if (Time.frameCount % 2 == 0)
+        {
+            gameObject.GetComponent<Button>().onClick.Invoke();
+        }
     }
 
     public void OnPointerDown(PointerEventData pointerEventData)

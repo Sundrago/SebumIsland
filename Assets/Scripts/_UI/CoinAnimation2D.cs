@@ -1,20 +1,23 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+///     Represents a coin object and its animation.
+/// </summary>
 public class Coin
 {
     public RectTransform coin;
+    private bool onTransition;
 
     private Vector2 startPos, targetPos, endPos;
-    private bool onTransition;
     private float startTime, endTime;
 
-    public void Setup(Vector2 end, RectTransform obj, float velocity, Vector2 starts)
+    public void SetupAnimation(Vector2 end, RectTransform obj, float velocity, Vector2 starts)
     {
         onTransition = true;
         startPos = starts;
-        targetPos = new Vector2(startPos.x + Random.Range(0, Screen.width) - Screen.width/2, Screen.height - Random.Range(0, Screen.height/2f * velocity));
+        targetPos = new Vector2(startPos.x + Random.Range(0, Screen.width) - Screen.width / 2,
+            Screen.height - Random.Range(0, Screen.height / 2f * velocity));
         endPos = end;
         startTime = Time.time;
         endTime = startTime + Vector2.Distance(startPos, targetPos) / 1250f;
@@ -23,9 +26,9 @@ public class Coin
         coin.transform.position = startPos;
     }
 
-    public bool Update()
+    public bool IsAnimFinished()
     {
-        float normal = (Time.time - startTime) / (endTime - startTime);
+        var normal = (Time.time - startTime) / (endTime - startTime);
         normal = normal == 1 ? 1 : 1 - Mathf.Pow(2, -10 * normal);
 
         if (normal > 0.995f)
@@ -34,44 +37,51 @@ public class Coin
             return true;
         }
 
+        UpdateTransform(normal);
+        return false;
+    }
+
+    private void UpdateTransform(float normal)
+    {
         Vector2 a, b, c;
         a = Vector2.Lerp(startPos, targetPos, normal);
         b = Vector2.Lerp(targetPos, endPos, normal);
         c = Vector2.Lerp(a, b, normal);
 
         coin.transform.position = c;
-        return false;
     }
 }
 
+/// <summary>
+///     Represents a class that handles the animation of coin objects.
+/// </summary>
 public class CoinAnimation2D : MonoBehaviour
 {
-    [SerializeField] GameObject coin_ui;
-    [SerializeField] GameObject coin;
-    [SerializeField] GameObject coin_holder;
+    [SerializeField] private GameObject coin_ui;
+    [SerializeField] private GameObject coin;
+    [SerializeField] private GameObject coin_holder;
 
-    private List<Coin> coins = new List<Coin>();
+    private readonly List<Coin> coins = new();
 
-    void Update()
+    private void Update()
     {
-        for(int i = coins.Count - 1; i>=0; i--)
-        {
-            if(coins[i].Update())
+        for (var i = coins.Count - 1; i >= 0; i--)
+            if (coins[i].IsAnimFinished())
             {
                 Destroy(coins[i].coin.gameObject);
                 coins.Remove(coins[i]);
             }
-        }
     }
 
-    public void Addcoin(int count, Vector2 startPos)
+    public void AddCoin(int count, Vector2 startPos)
     {
-        for (int i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
         {
-            GameObject newCoinObj = Instantiate(coin, coin_holder.transform);
-            Coin newCoin = new Coin();
+            var newCoinObj = Instantiate(coin, coin_holder.transform);
+            var newCoin = new Coin();
             newCoinObj.SetActive(true);
-            newCoin.Setup(coin_ui.GetComponent<RectTransform>().transform.position, newCoinObj.GetComponent<RectTransform>(), 1.5f, startPos);
+            newCoin.SetupAnimation(coin_ui.GetComponent<RectTransform>().transform.position,
+                newCoinObj.GetComponent<RectTransform>(), 1.5f, startPos);
 
             coins.Add(newCoin);
         }
