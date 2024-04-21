@@ -8,7 +8,7 @@ public class DebugManager : MonoBehaviour
 {
     [SerializeField] private MoneyManager money;
     [SerializeField] private GameObject newPigiAnim;
-    [SerializeField] private Skybox2D_Manager skybox;
+    [SerializeField] private Skybox2DManager skybox;
     [SerializeField] private Coin2DAnimationManager coin2DAnimationManager;
 
     public void Debug_ToggleDebugPanel()

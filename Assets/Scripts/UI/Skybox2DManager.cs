@@ -6,7 +6,7 @@ using UnityEngine.UI;
 ///     Manages and animate 2D skybox.
 /// </summary>
 [RequireComponent(typeof(RectTransform))]
-public class Skybox2D_Manager : MonoBehaviour
+public class Skybox2DManager : MonoBehaviour
 {
     [SerializeField] private float scrollSpeed;
     [SerializeField] private Sprite[] bg_sprites;
@@ -53,7 +53,7 @@ public class Skybox2D_Manager : MonoBehaviour
     private void CreateChild()
     {
         child = Instantiate(gameObject, gameObject.transform);
-        Destroy(child.GetComponent<Skybox2D_Manager>());
+        Destroy(child.GetComponent<Skybox2DManager>());
         child.transform.position = gameObject.transform.position;
     }
 
