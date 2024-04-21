@@ -86,7 +86,7 @@ public class TerrainManager : MonoBehaviour
         for (var i = 0; i < locationManger.Locations.Count; i++)
             if ((locationManger.Locations[i].x == x) & (locationManger.Locations[i].y == y))
                 return i;
-        Debug.LogError($"[LocationManager : GetLocationIdx] Can't find locationsIDX on x : {x}, y : {y}");
+        //Debug.LogError($"[LocationManager : GetLocationIdx] Can't find locationsIDX on x : {x}, y : {y}");
         return -1;
     }
 }

@@ -75,7 +75,7 @@ public class LocationManger : MonoBehaviour
     private void Start()
     {
         SetDefaultUIState();
-        SetLocations(12, 12);
+        SetLocations(9, 9);
         terrainManager.UpdateTerrain();
     }
 

@@ -162,6 +162,7 @@ public class LandmarkController : LocationObject
 
     public void UpdateData()
     {
+        if(!initiated) ReadCSV();
         PriceMultiplier = Data.data[UpgradeStatus].value;
         SpeedMultiplier = Data.data[UpgradeStatus].speed;
 

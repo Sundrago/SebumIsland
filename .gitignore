@@ -12,4 +12,5 @@
 # ignore followings.
 PrivateData.cs
 *.DS_Store
+*.meta
 /.plastic/**

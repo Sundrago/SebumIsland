@@ -42,8 +42,7 @@ public class LocationObject : MonoBehaviour
         csv.Start();
         Data = csv.GetDataList(ScriptableObjet.ModelID);
         GetLevelUpInfo();
-
-        //setup build time
+        
         if (buildCompleteTime == null)
             this.buildCompleteTime = DateTime.Now.AddSeconds(Data.buildTime);
         else
