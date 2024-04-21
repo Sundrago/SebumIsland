@@ -6,6 +6,7 @@
 !/.gitignore
 !/Assets/Scripts/**
 !/Docs/**
+!/README.md
 
 # ignore followings.
 PrivateData.cs
