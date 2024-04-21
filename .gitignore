@@ -5,8 +5,6 @@
 !*/
 !/.gitignore
 !/Assets/Scripts/**
-!/ProjectSettings/**
-!/Packages/**
 !/Docs/**
 
 # ignore followings.
